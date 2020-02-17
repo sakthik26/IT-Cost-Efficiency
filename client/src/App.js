@@ -61,23 +61,17 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const [state, setState] = React.useState({
     columns: [
-      { title: 'Name', field: 'name' },
-      { title: 'Surname', field: 'surname' },
-      { title: 'Birth Year', field: 'birthYear', type: 'numeric' },
-      {
-        title: 'Birth Place',
-        field: 'birthCity',
-        lookup: { 34: 'İstanbul', 63: 'Şanlıurfa' },
-      },
+      { title: 'Customer', field: 'customer',lookup: { 34: 'SBI', 63: 'Test' },},
+      { title: 'Measure ID', field: 'id' },
+      { title: 'Measure', field: 'measure' },
+      { title: 'Description', field: 'description' },
+      { title: 'Saving Potential (€)', field: 'potential', type:'numeric' },
     ],
     data: [
-      { name: 'Mehmet', surname: 'Baran', birthYear: 1987, birthCity: 63 },
-      {
-        name: 'Zerya Betül',
-        surname: 'Baran',
-        birthYear: 2017,
-        birthCity: 34,
-      },
+      { customer: 34, id: 'M001', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
+      { customer: 34, id: 'M002', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
+      { customer: 34, id: 'M003', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
+      { customer: 34, id: 'M004  ', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
     ], });
   const classes = useStyles();
   return (
@@ -95,7 +89,7 @@ function App() {
     </AppBar>
     <MaterialTable
     icons={tableIcons}
-      title="Editable Example"
+      title="Customer Measures"
       columns={state.columns}
       data={state.data}
       editable={{
@@ -136,7 +130,7 @@ function App() {
           }),
       }}
     />
-  );
+  
   </div>
   );
 }
