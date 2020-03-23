@@ -1,15 +1,15 @@
 const mongoose = require('mongoose');
 
 const measureSchema = new mongoose.Schema({
-  MEASURE_ID: {
+  measureId: {
     type: String,
     required: true
   },
-  CUSTOMER_ID: {
+  customerId: {
     type: String,
     required: true
   },
-  EXTERNALMEASURE_ID: {
+  externalMeasureId: {
     type: String,
     required: true
   },
@@ -29,15 +29,15 @@ const measureSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  Status: {
+  status: {
     type: String,
     required: true
   },
-  StatusLang: {
+  statusLang: {
     type: String,
     required: true
   }
- 
+
 });
 
 

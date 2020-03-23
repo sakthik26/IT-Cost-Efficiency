@@ -10,7 +10,8 @@ import MenuIcon from '@material-ui/icons/Menu';
 import { AddBox, ArrowDownward } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import { forwardRef } from 'react';
-
+import { useEffect } from 'react';
+import axios from 'axios';
 import Check from '@material-ui/icons/Check';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
@@ -26,24 +27,24 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
 const tableIcons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-  };
+  Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+  Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
+  Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
+  DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
+  Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
+  Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
+  FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
+  LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
+  NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
+  PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
+  ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
+  Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
+  SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
+  ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
+  ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
+};
 
 
 const useStyles = makeStyles(theme => ({
@@ -59,79 +60,104 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function App() {
-  const [state, setState] = React.useState({
-    columns: [
-      { title: 'Customer', field: 'customer',lookup: { 34: 'SBI', 63: 'Test' },},
-      { title: 'Measure ID', field: 'id' },
+  const [columns, setColumns] = React.useState(
+    [
+      { title: 'Measure ID', field: 'measureId' },
+      { title: 'Customer ID', field: 'customerId' },
+      { title: 'External Measure ID', field: 'externalMeasureId' },
       { title: 'Measure', field: 'measure' },
       { title: 'Description', field: 'description' },
-      { title: 'Saving Potential (€)', field: 'potential', type:'numeric' },
-    ],
-    data: [
-      { customer: 34, id: 'M001', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
-      { customer: 34, id: 'M002', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
-      { customer: 34, id: 'M003', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
-      { customer: 34, id: 'M004  ', measure: 'Steuerung IT Kosten and Program', description: '-', potential: 50000},
-    ], });
+      { title: 'Saving Potential (€)', field: 'potential', type: 'numeric' },
+      { title: 'Duration in Months', field: 'durationInMonth', type: 'numeric' },
+      { title: 'Status', field: 'status' },
+      { title: 'Status Lang', field: 'statusLang' },
+    ]);
+  const [rows, setRows] = React.useState({
+    rows: []
+  });
+
+
+
+  useEffect(() => {
+    // const result = await axios.get(
+    //   'http://localhost:4000/measures',
+    // );
+    fetch('http://localhost:4000/measures')
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        setRows(data);
+      })
+      .catch(error => console.log(error));
+  }, []);
   const classes = useStyles();
   return (
     <div className={classes.root}>
-    <AppBar position="static">
-      <Toolbar>
-        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" className={classes.title}>
-          IT Cost Efficiency
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            IT Cost Efficiency
         </Typography>
-        <Button color="inherit">Login</Button>
-      </Toolbar>
-    </AppBar>
-    <MaterialTable
-    icons={tableIcons}
-      title="Customer Measures"
-      columns={state.columns}
-      data={state.data}
-      editable={{
-        onRowAdd: newData =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              setState(prevState => {
-                const data = [...prevState.data];
-                data.push(newData);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
-        onRowUpdate: (newData, oldData) =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              if (oldData) {
-                setState(prevState => {
-                  const data = [...prevState.data];
-                  data[data.indexOf(oldData)] = newData;
-                  return { ...prevState, data };
-                });
-              }
-            }, 600);
-          }),
-        onRowDelete: oldData =>
-          new Promise(resolve => {
-            setTimeout(() => {
-              resolve();
-              setState(prevState => {
-                const data = [...prevState.data];
-                data.splice(data.indexOf(oldData), 1);
-                return { ...prevState, data };
-              });
-            }, 600);
-          }),
-      }}
-    />
-  
-  </div>
+          <Button color="inherit">Login</Button>
+        </Toolbar>
+      </AppBar>
+      {rows.length > 0 ?
+        <MaterialTable
+          icons={tableIcons}
+          title="Customer Measures"
+          columns={columns}
+          data={rows}
+          editable={{
+            onRowAdd: newData =>
+              new Promise(resolve => {
+                setTimeout(() => {
+                  resolve();
+                  axios
+                    .post("http://localhost:4000/measures", newData, {
+                    })
+                    .then((response) => {
+                      setRows(prevState => {
+                        const data = [...prevState];
+                        data.push(response.data);
+                        return data;
+                      })
+                    })
+                    .catch(function (e) {
+                      console.log(e);
+                    }, 600);
+                })
+              }),
+            onRowUpdate: (newData, oldData) =>
+              new Promise(resolve => {
+                setTimeout(() => {
+                  resolve();
+                  if (oldData) {
+                    setRows(prevState => {
+                      const data = [...prevState.data];
+                      data[data.indexOf(oldData)] = newData;
+                      return { ...prevState, data };
+                    });
+                  }
+                }, 600);
+              }),
+            onRowDelete: oldData =>
+              new Promise(resolve => {
+                setTimeout(() => {
+                  resolve();
+                  setRows(prevState => {
+                    const data = [...prevState.data];
+                    data.splice(data.indexOf(oldData), 1);
+                    return { ...prevState, data };
+                  });
+                }, 600);
+              }),
+          }}
+        />
+        : null}
+    </div>
   );
 }
 
