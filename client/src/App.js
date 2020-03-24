@@ -25,7 +25,8 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -62,7 +63,7 @@ const useStyles = makeStyles(theme => ({
 function App() {
   const [columns, setColumns] = React.useState(
     [
-      { title: 'Measure ID', field: 'measureId' },
+      { title: 'Measure ID', field: 'measureId', sorting: true },
       { title: 'Customer ID', field: 'customerId' },
       { title: 'External Measure ID', field: 'externalMeasureId' },
       { title: 'Measure', field: 'measure' },
@@ -75,7 +76,17 @@ function App() {
   const [rows, setRows] = React.useState({
     rows: []
   });
+  const [open, setOpen] = React.useState(false);
+  const handleClick = () => {
+    setOpen(true);
+  };
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
 
+    setOpen(false);
+  };
 
 
   useEffect(() => {
@@ -104,6 +115,11 @@ function App() {
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error">
+          Please enter values for all the fields
+        </Alert>
+      </Snackbar>
       {rows.length > 0 ?
         <MaterialTable
           icons={tableIcons}
@@ -112,23 +128,29 @@ function App() {
           data={rows}
           editable={{
             onRowAdd: newData =>
-              new Promise(resolve => {
-                setTimeout(() => {
-                  resolve();
-                  axios
-                    .post("http://localhost:4000/measures", newData, {
-                    })
-                    .then((response) => {
-                      setRows(prevState => {
-                        const data = [...prevState];
-                        data.push(response.data);
-                        return data;
+              new Promise((resolve, reject) => {
+                if (Object.keys(newData).length < 9) {
+                  setOpen(true);
+                  reject()
+                }
+                else {
+                  setTimeout(() => {
+                    resolve();
+                    axios
+                      .post("http://localhost:4000/measures", newData, {
                       })
-                    })
-                    .catch(function (e) {
-                      console.log(e);
-                    }, 600);
-                })
+                      .then((response) => {
+                        setRows(prevState => {
+                          const data = [...prevState];
+                          data.push(response.data);
+                          return data;
+                        })
+                      })
+                      .catch(function (e) {
+                        console.log(e);
+                      }, 600);
+                  })
+                }
               }),
             onRowUpdate: (newData, oldData) =>
               new Promise(resolve => {

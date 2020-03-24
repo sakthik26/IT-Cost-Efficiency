@@ -71,7 +71,7 @@ router.put('/:measureId', async (req, res) => {
 // Delete measure based on id 
 router.delete('/:measureId', async (req, res) => {
   try {
-    const removedMeasure = await Measure.remove({ _id: req.params.measureId })
+    const removedMeasure = await Measure.remove({ measureId: req.params.measureId })
     res.json(removedMeasure)
   } catch (err) {
     res.json({ message: err })
