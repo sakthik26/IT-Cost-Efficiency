@@ -147,12 +147,20 @@ function App() {
               new Promise(resolve => {
                 setTimeout(() => {
                   resolve();
-                  setRows(prevState => {
-                    const data = [...prevState.data];
-                    data.splice(data.indexOf(oldData), 1);
-                    return { ...prevState, data };
-                  });
-                }, 600);
+                  axios
+                    .delete("http://localhost:4000/measures/" + oldData.measureId, {
+                    })
+                    .then((response) => {
+                      setRows(prevState => {
+                        const data = [...prevState];
+                        data.splice(data.indexOf(oldData), 1);
+                        return data;
+                      })
+                    })
+                    .catch(function (e) {
+                      console.log(e);
+                    }, 600);
+                })
               }),
           }}
         />

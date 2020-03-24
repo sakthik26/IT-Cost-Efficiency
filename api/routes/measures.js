@@ -49,12 +49,28 @@ router.post('/', (req, res) => {
     });
 });
 
-// Update one subscriber
-//router.patch('/:id', (req, res) => {
-//})
+router.put('/:measureId', async (req, res) => {
+  try {
+    const updatedMeasure = await Measure.updateOne(
+      { _id: req.params.measureId },
+      { $set: { measure: req.body.measure } }
+    )
+    res.json(updatedMeasure)
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
 
-// Delete one subscriber
-//router.delete('/:id', (req, res) => {
-//})
+
+// Delete measure based on id 
+router.delete('/:measureId', async (req, res) => {
+  try {
+    const removedMeasure = await Measure.remove({ _id: req.params.measureId })
+    res.json(removedMeasure)
+  } catch (err) {
+    res.json({ message: err })
+  }
+
+});
 
 module.exports = router;
