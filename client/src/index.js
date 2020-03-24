@@ -6,16 +6,17 @@ import App from './App';
 import { Provider } from 'react-redux'
 import configureStore from './store'
 import * as serviceWorker from './serviceWorker';
-
+import SignUp from './pages/SignUp'
 const routing = (
-    <Router>
-        <Provider store={configureStore()}>
+  <Router>
+    <Provider store={configureStore()}>
       <div>
-        <Route path="/" component={App} />
+        <Route exact path="/" component={App} />
+        <Route exact path="/signup" component={SignUp} />
       </div>
-      </Provider>
-    </Router>
-  )
+    </Provider>
+  </Router>
+)
 
 ReactDOM.render(routing, document.getElementById('root'));
 

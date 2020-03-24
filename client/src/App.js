@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { withRouter } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -112,7 +112,7 @@ function App() {
           <Typography variant="h6" className={classes.title}>
             IT Cost Efficiency
         </Typography>
-          <Button color="inherit">Login</Button>
+          <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button>
         </Toolbar>
       </AppBar>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
