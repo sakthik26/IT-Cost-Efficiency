@@ -48,12 +48,18 @@ router.post('/', (req, res) => {
       res.json({ message: err });
     });
 });
-
+// Update all fields of a measure based on id
 router.put('/:measureId', async (req, res) => {
   try {
-    const updatedMeasure = await Measure.updateOne(
-      { _id: req.params.measureId },
-      { $set: { measure: req.body.measure } }
+    const updatedMeasure = await Measure.findOneAndUpdate(
+      { measureId: req.params.measureId },
+      {
+        $set: {
+          measureId: req.body.measureId, customerId: req.body.customerId, externalMeasureId: req.body.externalMeasureId,
+          measure: req.body.measure, description: req.body.description, potential: req.body.potential, durationInMonth: req.body.durationInMonth,
+          status: req.body.status, statusLang: req.body.statusLang
+        }
+      }
     )
     res.json(updatedMeasure)
   } catch (err) {

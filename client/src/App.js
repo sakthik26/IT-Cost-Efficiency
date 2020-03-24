@@ -134,14 +134,21 @@ function App() {
               new Promise(resolve => {
                 setTimeout(() => {
                   resolve();
-                  if (oldData) {
-                    setRows(prevState => {
-                      const data = [...prevState.data];
-                      data[data.indexOf(oldData)] = newData;
-                      return { ...prevState, data };
-                    });
-                  }
-                }, 600);
+                  axios
+                    .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+                    })
+                    .then((response) => {
+                      setRows(prevState => {
+                        const data = [...prevState];
+                        data[data.indexOf(oldData)] = newData;
+                        return data;
+                      })
+                    })
+                    .catch(function (e) {
+                      console.log(e);
+                    }, 600);
+                })
+
               }),
             onRowDelete: oldData =>
               new Promise(resolve => {
