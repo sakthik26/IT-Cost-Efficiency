@@ -3,7 +3,7 @@ const router = express.Router();
 const Measure = require('../models/measure');
 
 
-// Get all subscribers
+// Gets all the measures
 router.get('/', async (req, res) => {
   //res.send('it works')
   try {
@@ -14,11 +14,20 @@ router.get('/', async (req, res) => {
       }
 })
 
-// Get one subscriber
-//router.get('/:id', async (req, res) => {
-//})
+// Gets only specific measure
 
-// Create one subscriber
+router.get('/:measureId', async (req, res) => {
+  try {
+      const measure = await Measure.findById(req.params.measureId)
+      res.json(measure)
+  } catch (err) {
+      res.json({ message: err })
+  }
+})
+
+
+
+// Creates Measures in the database
 router.post('/', (req, res) => {
       const measure = new Measure({
         MEASURE_ID: req.body.MEASURE_ID,
@@ -47,12 +56,30 @@ router.post('/', (req, res) => {
       });
 });
 
-// Update one subscriber
-//router.patch('/:id', (req, res) => {
-//})
 
-// Delete one subscriber
-//router.delete('/:id', (req, res) => {
-//})
+// Update measure based on id
+router.patch('/:measureId', async (req, res) => { 
+  try {
+      const updatedMeasure = await Measure.updateOne(
+        { _id: req.params.measureId }, 
+        { $set: { measure: req.body.measure } }
+       ) 
+       res.json(updatedMeasure)
+      } catch (err) {
+        res.json({ message: err });
+    }
+});
+
+
+// Delete measure based on id 
+router.delete('/:measureId', async (req, res) => { 
+  try { 
+      const removedMeasure = await Measure.remove({ _id: req.params.measureId })
+      res.json(removedMeasure)
+  } catch (err) {
+      res.json({ message: err })
+  }
+
+});
 
 module.exports = router;
