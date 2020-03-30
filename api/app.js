@@ -1,15 +1,23 @@
 const express = require('express');
 const app = express();
+const config = require("config");
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 require('dotenv/config');
-
+const usersRoute = require("./routes/user.route");
 app.use(bodyParser.json());
+
+if (!config.get("myprivatekey")) {
+    console.error("FATAL ERROR: myprivatekey is not defined.");
+    process.exit(1);
+}
 
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true })
 const db = mongoose.connection
 db.on('error', (error) => console.error(error))
 db.once('open', () => console.log('connected to database'))
+
+
 
 app.use(express.json())
 app.use(function (req, res, next) {
@@ -36,7 +44,7 @@ app.use('/measures', measuresRouter);
 
 
 app.get('/', (req, res) => res.send('Capgemini'));
-
+app.use("/api/users", usersRoute);
 
 
 const port = process.env.PORT || 4000;
