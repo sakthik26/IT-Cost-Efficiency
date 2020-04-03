@@ -12,7 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-
+import axios from 'axios';
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -46,8 +46,35 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
+
 export default function SignUp() {
     const classes = useStyles();
+    const [name, setName] = React.useState("");
+    const [email, setEmail] = React.useState("");
+    const [password, setPassword] = React.useState("");
+    const handleInputChange = (e) => {
+        setName(e.target.value)
+    }
+    const handleInputEmailChange = (e) => {
+        setEmail(e.target.value)
+    }
+    const handleInputPassowrdChange = (e) => {
+        setPassword(e.target.value)
+    }
+    const handleSignUp = (e) => {
+        axios
+            .post("http://localhost:4000/api/users", { "name": name, "email": email, "password": password }, {
+            })
+            .then((response) => {
+
+                window.location.href = '/measures';
+            })
+            .catch(function (e) {
+                console.log(e);
+            }, 600);
+    }
+
 
     return (
         <Container component="main" maxWidth="xs">
@@ -61,19 +88,20 @@ export default function SignUp() {
         </Typography>
                 <form className={classes.form} noValidate>
                     <Grid container spacing={2}>
-                        <Grid item xs={12} sm={6}>
+                        <Grid item xs={12}>
                             <TextField
-                                autoComplete="fname"
-                                name="firstName"
+                                autoComplete="name"
+                                name="name"
                                 variant="outlined"
                                 required
+                                onChange={handleInputChange}
                                 fullWidth
                                 id="firstName"
-                                label="First Name"
+                                label=" Name"
                                 autoFocus
                             />
                         </Grid>
-                        <Grid item xs={12} sm={6}>
+                        {/* <Grid item xs={12} sm={6}>
                             <TextField
                                 variant="outlined"
                                 required
@@ -83,13 +111,14 @@ export default function SignUp() {
                                 name="lastName"
                                 autoComplete="lname"
                             />
-                        </Grid>
+                        </Grid> */}
                         <Grid item xs={12}>
                             <TextField
                                 variant="outlined"
                                 required
                                 fullWidth
                                 id="email"
+                                onChange={handleInputEmailChange}
                                 label="Email Address"
                                 name="email"
                                 autoComplete="email"
@@ -100,6 +129,7 @@ export default function SignUp() {
                                 variant="outlined"
                                 required
                                 fullWidth
+                                onChange={handleInputPassowrdChange}
                                 name="password"
                                 label="Password"
                                 type="password"
@@ -115,17 +145,17 @@ export default function SignUp() {
                         </Grid>
                     </Grid>
                     <Button
-                        type="submit"
                         fullWidth
                         variant="contained"
                         color="primary"
+                        onClick={handleSignUp}
                         className={classes.submit}
                     >
                         Sign Up
           </Button>
                     <Grid container justify="flex-end">
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link href="/signin" variant="body2">
                                 Already have an account? Sign in
               </Link>
                         </Grid>

@@ -7,12 +7,14 @@ import { Provider } from 'react-redux'
 import configureStore from './store'
 import * as serviceWorker from './serviceWorker';
 import SignUp from './pages/SignUp'
+import SignIn from './pages/SignIn'
 const routing = (
   <Router>
     <Provider store={configureStore()}>
       <div>
-        <Route exact path="/" component={App} />
-        <Route exact path="/signup" component={SignUp} />
+        <Route exact path="/measures" component={App} />
+        <Route exact path="/" component={SignUp} />
+        <Route exact path="/signin" component={SignIn} />
       </div>
     </Provider>
   </Router>

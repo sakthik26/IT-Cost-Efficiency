@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Measure = require('../models/measure');
-
+const auth = require("../middleware/auth");
 
 // Get all subscribers
 router.get('/', async (req, res) => {
