@@ -93,7 +93,11 @@ function App() {
     // const result = await axios.get(
     //   'http://localhost:4000/measures',
     // );
-    fetch('http://localhost:4000/measures')
+    fetch('http://localhost:4000/measures', {
+      method: 'GET',
+      headers: { 'Authorization': "Bearer " + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTgzNTkxMTMxZmRiNDhhMDM5Yjk5ZTQiLCJpYXQiOjE1ODU2NjYzMjF9.5bZ-z2Er6mk0tp-CSL_3ABklR4KD-Xr3OvRTTxD1gJk' }
+
+    })
       .then(res => res.json())
       .then(data => {
         console.log(data)
@@ -112,7 +116,7 @@ function App() {
           <Typography variant="h6" className={classes.title}>
             IT Cost Efficiency
         </Typography>
-          <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button>
+          {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
         </Toolbar>
       </AppBar>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
@@ -138,6 +142,7 @@ function App() {
                     resolve();
                     axios
                       .post("http://localhost:4000/measures", newData, {
+                        headers: { Authorization: "x-access-token " + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTgzNTY4YjMxZmRiNDhhMDM5Yjk5ZTMiLCJpYXQiOjE1ODU2NjU2NzZ9.UvKL2AM2JzcUtHtQ9DZH2Pe0wVCCLs1cMw3sAyNdm2c' }
                       })
                       .then((response) => {
                         setRows(prevState => {
