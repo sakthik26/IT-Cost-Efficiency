@@ -77,6 +77,6 @@ router.delete('/:measureId', async (req, res) => {
     res.json({ message: err })
   }
 
-});
+}); 
 
 module.exports = router;

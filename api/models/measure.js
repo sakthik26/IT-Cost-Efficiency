@@ -48,6 +48,4 @@ module.exports = mongoose.model('measure', measureSchema);
 
 //const Model = mongoose.model('measure', measureSchema);
 
-//const obj = new Model(req.body)
 
-//Model.createCollection();
