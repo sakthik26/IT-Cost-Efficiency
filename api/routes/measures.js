@@ -4,7 +4,7 @@ const Measure = require('../models/measure');
 const auth = require("../middleware/auth");
 
 // Get all subscribers
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   //res.send('it works')
   try {
     const measures = await Measure.find()

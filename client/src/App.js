@@ -95,8 +95,7 @@ function App() {
     // );
     fetch('http://localhost:4000/measures', {
       method: 'GET',
-      headers: { 'Authorization': "Bearer " + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTgzNTkxMTMxZmRiNDhhMDM5Yjk5ZTQiLCJpYXQiOjE1ODU2NjYzMjF9.5bZ-z2Er6mk0tp-CSL_3ABklR4KD-Xr3OvRTTxD1gJk' }
-
+      headers: { 'x-access-token': localStorage.getItem('token') || '' }
     })
       .then(res => res.json())
       .then(data => {

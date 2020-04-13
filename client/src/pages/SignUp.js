@@ -67,7 +67,7 @@ export default function SignUp() {
             .post("http://localhost:4000/api/users", { "name": name, "email": email, "password": password }, {
             })
             .then((response) => {
-
+                localStorage.setItem('token', response.data.token)
                 window.location.href = '/measures';
             })
             .catch(function (e) {
