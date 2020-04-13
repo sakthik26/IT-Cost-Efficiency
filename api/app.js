@@ -39,12 +39,23 @@ app.use(function (req, res, next) {
     next();
 });
 //Import Routes
+
+//Measures router
 const measuresRouter = require('./routes/measures');
 app.use('/measures', measuresRouter);
 
+//Customer Router
+const customersRouter = require('./routes/customers');
+app.use('/customers', customersRouter);
 
+//Users Router
 app.get('/', (req, res) => res.send('Capgemini'));
 app.use("/api/users", usersRoute);
+
+//UserRights Router
+const userRightsRouter = require('./routes/userRights');
+app.use("/userrights", userRightsRouter);
+
 
 
 const port = process.env.PORT || 4000;
