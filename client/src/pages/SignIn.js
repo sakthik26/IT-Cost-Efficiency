@@ -59,9 +59,12 @@ export default function SignIn() {
     }
     const handleSignIn = (e) => {
         axios
-            .get("http://localhost:4000/api/users/current", { "email": email, "password": password }, {
+            .post("http://localhost:4000/api/users/login", { "email": email, "password": password }, {
             })
             .then((response) => {
+                localStorage.setItem('token', response.data.token)
+                localStorage.setItem('id', response.data.id)
+                localStorage.setItem('customerId', response.data.customerId)
                 window.location.href = '/measures';
             })
             .catch(function (e) {

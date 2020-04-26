@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
-
+const Customer = require('./customer');
 const measureSchema = new mongoose.Schema({
   measureId: {
     type: String,
     required: true
   },
   customerId: {
-    type: String,
-    required: true
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer'
   },
   externalMeasureId: {
     type: String,
@@ -41,13 +41,11 @@ const measureSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('measure', measureSchema);
+module.exports = mongoose.model('Measures', measureSchema);
 
 
 //const collectionName = "measure";
 
 //const Model = mongoose.model('measure', measureSchema);
 
-//const obj = new Model(req.body)
 
-//Model.createCollection();

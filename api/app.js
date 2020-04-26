@@ -29,7 +29,7 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, X-Access-Token');
 
     // Set to true if you need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
@@ -39,12 +39,23 @@ app.use(function (req, res, next) {
     next();
 });
 //Import Routes
+
+//Measures router
 const measuresRouter = require('./routes/measures');
 app.use('/measures', measuresRouter);
 
+//Customer Router
+const customersRouter = require('./routes/customers');
+app.use('/customers', customersRouter);
 
+//Users Router
 app.get('/', (req, res) => res.send('Capgemini'));
 app.use("/api/users", usersRoute);
+
+//UserRights Router
+const userRightsRouter = require('./routes/userRights');
+app.use("/userrights", userRightsRouter);
+
 
 
 const port = process.env.PORT || 4000;
