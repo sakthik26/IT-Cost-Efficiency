@@ -1,6 +1,9 @@
 const auth = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 const { User, validate } = require("../models/user.model");
+const UserRight = require("../models/userRight");
+const Measures = require("../models/measure");
+const Customer = require("../models/customer");
 const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
@@ -14,12 +17,18 @@ router.get("/current", auth, async (req, res) => {
 router.post('/login', async (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
+
     // For the given username fetch user from DB
     // let mockedEmail = 'admin';
     // let mockedPassword = 'password';
 
     let user = await User.findOne({ email: email });
+    let userRight = await UserRight.findOne({ userId: user.id });
+    console.log('userright' + userRight)
     if (user) {
+
+
+
         bcrypt.compare(req.body.password, user.password, function (err, response) {
             if (err) {
                 // handle error
@@ -28,9 +37,13 @@ router.post('/login', async (req, res) => {
             if (response) {
                 // Send JWT
                 let token = jwt.sign({ email: this.email }, config.get('myprivatekey'))
+                //currently setting the customer id here - Admin portal to switch the customer
+
                 res.header("x-access-token", token).send({
                     success: true,
                     message: 'Authentication successful!',
+                    id: user.id,
+                    customerId: userRight !== undefined && userRight !== null ? userRight.customerId : null,
                     token: token
                 });
             } else {
@@ -51,7 +64,7 @@ router.post("/", async (req, res) => {
     //find an existing user
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send("User already registered.");
- 
+
     user = new User({
         name: req.body.name,
         password: req.body.password,
@@ -66,7 +79,7 @@ router.post("/", async (req, res) => {
 
     const token = user.generateAuthToken();
     res.header("x-access-token", token).send({
-        _id: user._id,
+        id: user._id,
         name: user.name,
         email: user.email,
         token: token

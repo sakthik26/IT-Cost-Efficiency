@@ -64,7 +64,7 @@ function App() {
   const [columns, setColumns] = React.useState(
     [
       { title: 'Measure ID', field: 'measureId', sorting: true },
-      { title: 'Customer ID', field: 'customerId' },
+      { title: 'Customer', field: 'customerId.customer' },
       { title: 'External Measure ID', field: 'externalMeasureId' },
       { title: 'Measure', field: 'measure' },
       { title: 'Description', field: 'description' },
@@ -80,6 +80,12 @@ function App() {
   const handleClick = () => {
     setOpen(true);
   };
+  const logOut = (event, reason) => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('id')
+    localStorage.removeItem('customerId')
+    window.location.href = '/signin'
+  };
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -93,7 +99,11 @@ function App() {
     // const result = await axios.get(
     //   'http://localhost:4000/measures',
     // );
-    fetch('http://localhost:4000/measures', {
+    if (!localStorage.getItem('id')) {
+      window.location.href = "/signin"
+      return
+    }
+    fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id'), {
       method: 'GET',
       headers: { 'x-access-token': localStorage.getItem('token') || '' }
     })
@@ -103,8 +113,7 @@ function App() {
         setRows(data);
       })
       .catch(error => console.log(error));
-  }, []);
-  const classes = useStyles();
+  }, []); const classes = useStyles();
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -116,7 +125,9 @@ function App() {
             IT Cost Efficiency
         </Typography>
           {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
+          <Button color="inherit" onClick={logOut}>Logout</Button>
         </Toolbar>
+
       </AppBar>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="error">
@@ -132,16 +143,17 @@ function App() {
           editable={{
             onRowAdd: newData =>
               new Promise((resolve, reject) => {
-                if (Object.keys(newData).length < 9) {
+                if (Object.keys(newData).length < 8) {
                   setOpen(true);
                   reject()
                 }
                 else {
                   setTimeout(() => {
+                    newData.customerId = localStorage.getItem('customerId') + ''
                     resolve();
                     axios
                       .post("http://localhost:4000/measures", newData, {
-                        headers: { Authorization: "x-access-token " + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZTgzNTY4YjMxZmRiNDhhMDM5Yjk5ZTMiLCJpYXQiOjE1ODU2NjU2NzZ9.UvKL2AM2JzcUtHtQ9DZH2Pe0wVCCLs1cMw3sAyNdm2c' }
+                        headers: { 'x-access-token': localStorage.getItem('token') }
                       })
                       .then((response) => {
                         setRows(prevState => {
@@ -159,9 +171,11 @@ function App() {
             onRowUpdate: (newData, oldData) =>
               new Promise(resolve => {
                 setTimeout(() => {
+                  newData.customerId = localStorage.getItem('customerId') + ''
                   resolve();
                   axios
                     .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+                      headers: { 'x-access-token': localStorage.getItem('token') }
                     })
                     .then((response) => {
                       setRows(prevState => {
@@ -197,7 +211,9 @@ function App() {
               }),
           }}
         />
-        : null}
+        : <Typography variant="h6" className={classes.title}>
+          You have not been assigned customers at the moment, please contact your administrator.
+    </Typography>}
     </div>
   );
 }

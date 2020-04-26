@@ -2,14 +2,37 @@ const express = require('express');
 const router = express.Router();
 const Measure = require('../models/measure');
 const auth = require("../middleware/auth");
-
+const Customer = require("../models/customer");
+const UserRight = require("../models/userRight");
+const Measures = require("../models/measure");
+var ObjectId = require('mongodb').ObjectID;
 // Get all subscribers
 router.get('/', auth, async (req, res) => {
   //res.send('it works')
-  try {
-    const measures = await Measure.find()
-    res.json(measures)
-  } catch (err) {
+  let userId = req.query.id
+  console.log('here' + userId)
+  if (userId) {
+    UserRight.find({ userId: userId }).populate('userId').exec(function (err, user) {
+      if (err) throw err;
+      else {
+        console.log(user[0])
+        let customerId = user[0].customerId
+
+        Measures.find({ customerId: customerId }).populate('customerId').exec(function (err, measures) {
+          if (err) throw err;
+          else
+            res.json(measures)
+        });
+      }
+    })
+    // try {
+    //   const measures = await Measure.find()
+
+    // } catch (err) {
+    //   res.status(500).json({ message: err.message })
+    // }
+  }
+  else {
     res.status(500).json({ message: err.message })
   }
 })
@@ -21,10 +44,13 @@ router.get('/', auth, async (req, res) => {
 //})
 
 // Create one subscriber
-router.post('/', (req, res) => {
+router.post('/', auth, async (req, res) => {
+
+  let customer = await Customer.findOne({ _id: new ObjectId(req.body.customerId) });
+  console.log(customer)
   const measure = new Measure({
     measureId: req.body.measureId,
-    customerId: req.body.customerId,
+    customerId: customer,
     externalMeasureId: req.body.externalMeasureId,
     measure: req.body.measure,
     description: req.body.description,
@@ -77,6 +103,6 @@ router.delete('/:measureId', async (req, res) => {
     res.json({ message: err })
   }
 
-}); 
+});
 
 module.exports = router;

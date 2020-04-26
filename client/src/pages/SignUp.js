@@ -68,6 +68,7 @@ export default function SignUp() {
             })
             .then((response) => {
                 localStorage.setItem('token', response.data.token)
+                localStorage.setItem('id', response.data.id)
                 window.location.href = '/measures';
             })
             .catch(function (e) {
