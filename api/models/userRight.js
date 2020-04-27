@@ -1,15 +1,22 @@
 const mongoose = require('mongoose');
 const Customer = require('./customer');
 const User = require('./user.model');
-const userRightSchema = new mongoose.Schema({
 
+
+const userRightSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    //ref: 'User'
   },
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
+  },
+  customer: {
+    type: String
+  },
+  email: {
+    type: String
   },
   permission: {
     type: String,
