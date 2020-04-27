@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 //simple schema
 const UserSchema = new mongoose.Schema({
+    userId: mongoose.Schema.Types.ObjectId,
     name: {
         type: String,
         required: true,
