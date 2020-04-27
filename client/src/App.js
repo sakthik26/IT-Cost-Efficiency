@@ -131,7 +131,7 @@ function App() {
       </AppBar>
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="error">
-          Please enter values for all the fields listed
+          Please enter values for all the fields
         </Alert>
       </Snackbar>
       {rows.length > 0 ?
