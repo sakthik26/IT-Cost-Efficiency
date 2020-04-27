@@ -27,7 +27,7 @@ router.post('/', async (req, res) => {
     permission_level: req.body.permission_level
   });
 
-  //compare userId from user Collection and assign it in userRights
+  //compare email from user and userrights collections and assign corresponding userId  
   const user = await User.findOne({ email: req.body.email });
   console.log(user);
   if(userrights.email == user.email)
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
     userrights.userId = user._id;
   }
 
-  //compare customer name from customer collection and assign it in customer
+  //compare customer name from customer and userrights collections and assign corresponding customerId
   const customer = await Customer.findOne({ customer: req.body.customer });
   console.log(customer);
   if(userrights.customer == customer.customer)
