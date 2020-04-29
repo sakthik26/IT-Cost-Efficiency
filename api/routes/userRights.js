@@ -19,8 +19,6 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
 
   const userrights = new UserRight({
-    userId: req.body.userId,
-    customerId: req.body.customerId,
     customer: req.body.customer,
     email: req.body.email,
     permission: req.body.permission,
@@ -53,10 +51,10 @@ router.post('/', async (req, res) => {
 });
 
 
-// Delete user right based on id 
-router.delete('/:userRightsId', async (req, res) => {
+// Delete user right based on email
+router.delete('/:email', async (req, res) => {
   try {
-    const removedUserRight = await Customer.remove({ userRightsId: req.params.userRightsId })
+    const removedUserRight = await UserRight.remove({ email: req.params.email })
     res.json(removedUserRight)
   } catch (err) {
     res.json({ message: err })
