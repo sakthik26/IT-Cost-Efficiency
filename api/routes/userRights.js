@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const UserRight = require('../models/userRight');
 const { User } = require("../models/user.model");
-const Customer   = require("../models/customer");
+const Customer = require("../models/customer");
 
 
 // Gets all the userrights
@@ -19,8 +19,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
 
   const userrights = new UserRight({
-    userId: req.body.userId,
-    customerId: req.body.customerId,
+
     customer: req.body.customer,
     email: req.body.email,
     permission: req.body.permission,
@@ -30,16 +29,14 @@ router.post('/', async (req, res) => {
   //compare email from user and userrights collections and assign corresponding userId  
   const user = await User.findOne({ email: req.body.email });
   console.log(user);
-  if(userrights.email == user.email)
-  {
+  if (userrights.email == user.email) {
     userrights.userId = user._id;
   }
 
   //compare customer name from customer and userrights collections and assign corresponding customerId
   const customer = await Customer.findOne({ customer: req.body.customer });
   console.log(customer);
-  if(userrights.customer == customer.customer)
-  {
+  if (userrights.customer == customer.customer) {
     userrights.customerId = customer._id;
   }
 
@@ -54,9 +51,10 @@ router.post('/', async (req, res) => {
 
 
 // Delete user right based on id 
-router.delete('/:userRightsId', async (req, res) => {
+// Delete user right based on email
+router.delete('/:email', async (req, res) => {
   try {
-    const removedUserRight = await Customer.remove({ userRightsId: req.params.userRightsId })
+    const removedUserRight = await UserRight.remove({ email: req.params.email })
     res.json(removedUserRight)
   } catch (err) {
     res.json({ message: err })
