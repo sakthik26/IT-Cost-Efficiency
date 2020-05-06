@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Customer = require('../models/customer');
+const Customer = require("../models/customer");
+const UserRights = require("../models/userRight")
 
 
 // Gets all the customers
@@ -25,12 +26,6 @@ router.post('/', (req, res) => {
       project: req.body.project
     });
   
-    /* try {
-       const newMeasure = await measure.save()
-       res.status(201).json(newMeasure)
-     } catch (err) {
-       res.status(400).json({ message: err.message })
-     } */
     customer.save()
       .then(data => {
         res.json(data);
@@ -39,6 +34,38 @@ router.post('/', (req, res) => {
         res.json({ message: err });
       });
   });
+
+
+// Update customers based on email
+router.put('/:customer', async (req, res) => {
+  try {
+    const updatedCustomer = await Customer.findOneAndUpdate(
+      { customer: req.params.customer },
+      {
+        $set: {
+          customer: req.body.customer, department: req.body.department, contact: req.body.contact,
+          address: req.body.address, project: req.body.project
+        }
+      }
+    )
+
+   /*const userrights = await UserRights.findOne({ customerId: req.body.customerId });
+   if(userrights.customerId == updatedCustomer._id)
+    {
+      userrights.customer = updatedCustomer.customer;
+    }
+    await userrights.save();*/
+    await updatedCustomer.save();
+    res.json(updatedCustomer)
+    
+  } catch (err) {
+    res.json({ message: err });
+  }
+});
+  
+
+
+
 
 // Delete customer based on id 
 router.delete('/:customerId', async (req, res) => {

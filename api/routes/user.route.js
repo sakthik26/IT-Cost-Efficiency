@@ -86,4 +86,28 @@ router.post("/", async (req, res) => {
     });
 });
 
+
+
+
+// Update name, email, password (hash the password during update) of the user
+router.put('/:email', async (req, res) => {
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { email: req.params.email },
+        {
+          $set: {
+            name: req.body.name, email: req.body.email, password: req.body.password
+          }
+        }
+      )
+      updatedUser.password = await bcrypt.hash(updatedUser.password, 10);
+      await updatedUser.save(); 
+      res.json(updatedUser)
+    } catch (err) {
+      res.json({ message: err });
+    }
+  });
+
+
+
 module.exports = router;
