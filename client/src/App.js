@@ -125,6 +125,13 @@ function App() {
   const handleCustomerChange = (event) => {
     setCustomers(event.target.value);
   };
+
+  const handleCustomerToDeleteChange = (event) => {
+    setCustomerToDelete(event.target.value);
+  };
+  const handleConsultantToDeleteChange = (event) => {
+    setConsultantToDelete(event.target.value);
+  };
   const handleConsultantChange = (event) => {
     setConsultant(event.target.value);
   };
@@ -279,6 +286,10 @@ function App() {
 
 
   const [createCustomerDialog, showCreateCustomerDialog] = React.useState(false);
+  const [deleteCustomerDialog, showDeleteCustomerDialog] = React.useState(false);
+  const [deleteConsultantDialog, showDeleteConsultantDialog] = React.useState(false);
+  const [customerToDelete, setCustomerToDelete] = React.useState('');
+  const [consultantToDelete, setConsultantToDelete] = React.useState('');
 
   const handleCreateCustomerOpen = () => {
     showCreateCustomerDialog(true);
@@ -286,6 +297,22 @@ function App() {
 
   const handleCreateCustomerClose = () => {
     showCreateCustomerDialog(false);
+  };
+
+  const handleDeleteCustomerOpen = () => {
+    showDeleteCustomerDialog(true);
+  };
+
+  const handleDeleteCustomerClose = () => {
+    showDeleteCustomerDialog(false);
+  };
+
+  const handleDeleteConsultantOpen = () => {
+    showDeleteConsultantDialog(true);
+  };
+
+  const handleDeleteConsultantClose = () => {
+    showDeleteConsultantDialog(false);
   };
 
   const handleCreateCustomer = () => {
@@ -304,6 +331,40 @@ function App() {
         console.log(e);
       });
   }
+
+  const handleDeleteCustomer = (customerToDelete) => {
+
+    axios
+      .delete("http://localhost:4000/customers/" + customerToDelete, {
+      })
+      .then((response) => {
+        let customers = customerOptions.filter(customer => customer != customerToDelete)
+        setCustomerOptions(customers)
+        handleDeleteCustomerClose()
+        window.location.href = "/measures"
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  }
+  const handleDeleteConsultant = (consultantToDelete) => {
+
+    axios
+      .delete("http://localhost:4000/api/users/" + consultantToDelete, {
+      })
+      .then((response) => {
+        let consultants = consultantOptions.filter(consultant => consultant != consultantToDelete)
+        setConsultantOptions(consultants)
+        handleDeleteConsultantClose()
+
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  }
+
+
+
 
   const changeCustomerName = (e) => {
     setCustomerName(e.target.value)
@@ -434,11 +495,12 @@ function App() {
           :
           <div>
             <div>
-              <Button variant="outlined" color="primary" onClick={handleCreateCustomerOpen}>
+              <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleCreateCustomerOpen}>
                 Create Customer
       </Button>
               <Dialog open={createCustomerDialog} onClose={handleCreateCustomerClose} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+
+                <DialogTitle id="form-dialog-title">Create</DialogTitle>
                 <DialogContent>
                   <DialogContentText>
                     Please enter the customer details
@@ -469,8 +531,88 @@ function App() {
           </Button>
                 </DialogActions>
               </Dialog>
+
+
+              <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeleteCustomerOpen}>
+                Delete Customer
+      </Button>
+              <Dialog open={deleteCustomerDialog} onClose={handleDeleteCustomerClose} aria-labelledby="form-dialog-title">
+
+                <DialogTitle id="form-dialog-title">Delete Customer</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Please select the customer to delete
+          </DialogContentText>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-label">Customer</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={customerToDelete}
+                      onChange={handleCustomerToDeleteChange}
+                    >
+                      {customerOptions.map(item => (
+                        <MenuItem
+                          value={item}
+                        >
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDeleteCustomerClose} color="primary">
+                    Cancel
+          </Button>
+                  <Button onClick={() => { handleDeleteCustomer(customerToDelete) }} color="primary">
+                    Delete
+          </Button>
+                </DialogActions>
+              </Dialog>
+
+
+              <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeleteConsultantOpen}>
+                Delete Consultant
+            </Button>
+              <Dialog open={deleteConsultantDialog} onClose={handleDeleteConsultantClose} aria-labelledby="form-dialog-title">
+
+                <DialogTitle id="form-dialog-title">Delete Consultant</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Please select the consultant to delete
+          </DialogContentText>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={consultantToDelete}
+                      onChange={handleConsultantToDeleteChange}
+                    >
+                      {consultantOptions.map(item => (
+                        <MenuItem
+                          value={item}
+                        >
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDeleteConsultantClose} color="primary">
+                    Cancel
+          </Button>
+                  <Button onClick={() => { handleDeleteConsultant(consultantToDelete) }} color="primary">
+                    Delete
+          </Button>
+                </DialogActions>
+              </Dialog>
             </div>
-            <FormControl className={classes.formControl}>
+            <FormControl style={{ marginLeft: "60px" }} className={classes.formControl}>
               <InputLabel id="demo-simple-select-label">Customer</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -487,7 +629,7 @@ function App() {
                 ))}
               </Select>
             </FormControl>
-            <FormControl className={classes.formControl}>
+            <FormControl style={{ marginLeft: "20px" }} className={classes.formControl}>
               <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
               <Select
                 labelId="demo-simple-select-label"
@@ -513,8 +655,9 @@ function App() {
             >
               Add
           </Button>
+
             {customerOptions.map(customer => (
-              <div className={classes.customer}>
+              <div style={{ marginLeft: "60px" }} className={classes.customer}>
                 {customer} - {consultantAccess.map(consultant => {
 
                   return (consultant.customer === customer) ?

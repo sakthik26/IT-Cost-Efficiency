@@ -96,4 +96,14 @@ router.post("/", async (req, res) => {
     });
 });
 
+router.delete('/:email', async (req, res) => {
+    try {
+        const removedUser = await User.remove({ email: req.params.email })
+        res.json(removedUser)
+    } catch (err) {
+        res.json({ message: err })
+    }
+
+});
+
 module.exports = router;
