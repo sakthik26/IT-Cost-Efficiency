@@ -109,5 +109,16 @@ router.put('/:email', async (req, res) => {
   });
 
 
+// Delete user based on email
+router.delete('/:email', async (req, res) => {
+  try {
+    const removedUser = await User.remove({ email: req.params.email })
+    res.json(removedUser)
+  } catch (err) {
+    res.json({ message: err })
+  }
+
+});
+
 
 module.exports = router;
