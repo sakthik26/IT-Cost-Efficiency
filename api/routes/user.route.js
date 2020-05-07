@@ -14,6 +14,15 @@ router.get("/current", auth, async (req, res) => {
     res.send(user);
 });
 
+router.get("/", async (req, res) => {
+    try {
+        const users = await User.find()
+        res.json(users)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+});
+
 router.post('/login', async (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
@@ -43,7 +52,8 @@ router.post('/login', async (req, res) => {
                     success: true,
                     message: 'Authentication successful!',
                     id: user.id,
-                    customerId: userRight !== undefined && userRight !== null ? userRight.customerId : null,
+                    email: user.email,
+                    customerId: userRight !== null ? userRight.customerId : null,
                     token: token
                 });
             } else {
@@ -84,6 +94,16 @@ router.post("/", async (req, res) => {
         email: user.email,
         token: token
     });
+});
+
+router.delete('/:email', async (req, res) => {
+    try {
+        const removedUser = await User.remove({ email: req.params.email })
+        res.json(removedUser)
+    } catch (err) {
+        res.json({ message: err })
+    }
+
 });
 
 module.exports = router;

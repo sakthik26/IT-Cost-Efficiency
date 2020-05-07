@@ -27,6 +27,26 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import Chip from '@material-ui/core/Chip';
+import FaceIcon from '@material-ui/icons/Face';
+import DoneIcon from '@material-ui/icons/Done';
+
+
+// simple dialog imports
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+
+//simple dialog imports - end
 const tableIcons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
   Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
@@ -58,6 +78,19 @@ const useStyles = makeStyles(theme => ({
   title: {
     flexGrow: 1,
   },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+  customer: {
+    margin: 20
+  },
+  table: {
+    minWidth: 650,
+  },
 }));
 
 function App() {
@@ -76,6 +109,81 @@ function App() {
   const [rows, setRows] = React.useState({
     rows: []
   });
+  const [isAdmin, setAdmin] = React.useState(false);
+  const [customers, setCustomers] = React.useState('');
+  const [customerOptions, setCustomerOptions] = React.useState([]);
+  const [consultant, setConsultant] = React.useState('');
+  const [consultantOptions, setConsultantOptions] = React.useState([]);
+
+
+  const [customersAssigned, setCustomersAssigned] = React.useState([]);
+  const [selectedCustomer, setSelectedCustomer] = React.useState('');
+  const [consultantAccess, setConsultantAccess] = React.useState([]);
+
+  const [customerName, setCustomerName] = React.useState('');
+  const [customerDepartment, setCustomerDepartment] = React.useState('');
+  const handleCustomerChange = (event) => {
+    setCustomers(event.target.value);
+  };
+
+  const handleCustomerToDeleteChange = (event) => {
+    setCustomerToDelete(event.target.value);
+  };
+  const handleConsultantToDeleteChange = (event) => {
+    setConsultantToDelete(event.target.value);
+  };
+  const handleConsultantChange = (event) => {
+    setConsultant(event.target.value);
+  };
+
+  const changeCustomerSelected = (event) => {
+    setSelectedCustomer(event.target.value)
+    localStorage.setItem('customerId', event.target.value)
+    fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+      method: 'GET',
+      headers: { 'x-access-token': localStorage.getItem('token') || '' }
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log(data)
+        setRows(data);
+      })
+      .catch(error => console.log(error));
+
+  }
+
+  const handleConsultant = (event) => {
+
+    // if (consultantAccess.map(consultant => consultant.email).indexOf(consultant) >= 0) {
+    //   alert('Consultant already assigned to the customer')
+    // }
+
+    for (var i = 0; i < consultantAccess.length; i++) {
+      if (consultantAccess[i].email == consultant && consultantAccess[i].customer == customers) {
+        alert('Consultant already assigned to the customer')
+        return
+      }
+    }
+    let payload = {
+      customer: customers,
+      email: consultant,
+      permission: "root",
+      permission_level: "1"
+    }
+
+    console.log(consultantAccess)
+
+    axios
+      .post("http://localhost:4000/userrights", payload, {
+      })
+      .then((response) => {
+        setConsultantAccess(consultantAccess => [...consultantAccess, response.data]);
+
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  }
   const [open, setOpen] = React.useState(false);
   const handleClick = () => {
     setOpen(true);
@@ -93,6 +201,19 @@ function App() {
 
     setOpen(false);
   };
+  const handleDelete = (email) => {
+
+    axios
+      .delete("http://localhost:4000/userrights/" + email, {
+      })
+      .then((response) => {
+        let consultants = consultantAccess.filter(consultant => consultant.email != email)
+        setConsultantAccess(consultants)
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  };
 
 
   useEffect(() => {
@@ -103,7 +224,10 @@ function App() {
       window.location.href = "/signin"
       return
     }
-    fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id'), {
+    if (localStorage.getItem('emailId') && localStorage.getItem('emailId') === 'admin@gmail.com') {
+      setAdmin(true)
+    }
+    fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
       method: 'GET',
       headers: { 'x-access-token': localStorage.getItem('token') || '' }
     })
@@ -113,7 +237,142 @@ function App() {
         setRows(data);
       })
       .catch(error => console.log(error));
+
+
+    axios
+      .get("http://localhost:4000/customers", {
+      })
+      .then((response) => {
+        setCustomerOptions(response.data.map((customer) => customer.customer));
+        // var customers = {}
+        // for (var i = 0; i < response.data.length; i++) {
+        //   customers[response.data[i].customer] = []
+        // }
+        // setConsultantAccess(customers)
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+
+    axios
+      .get("http://localhost:4000/api/users ", {
+      })
+      .then((response) => {
+        setConsultantOptions(response.data.filter((consultant) => consultant.email != "admin@gmail.com").map((consultant) => consultant.email));
+
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+
+    axios
+      .get("http://localhost:4000/userrights", {
+      })
+      .then((response) => {
+        // setCustomerOptions(response.data.map((customer) => customer.customer));
+        // var customers = {}
+        // for (var i = 0; i < response.data.length; i++) {
+        //   customers[response.data[i].customer] = []
+        // }
+        setConsultantAccess(response.data)
+        setCustomersAssigned(response.data.filter((consultant) => consultant.email == localStorage.getItem('emailId')))
+
+        setSelectedCustomer(response.data.filter((consultant) => consultant.email == localStorage.getItem('emailId'))[0].customerId)
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
   }, []); const classes = useStyles();
+
+
+  const [createCustomerDialog, showCreateCustomerDialog] = React.useState(false);
+  const [deleteCustomerDialog, showDeleteCustomerDialog] = React.useState(false);
+  const [deleteConsultantDialog, showDeleteConsultantDialog] = React.useState(false);
+  const [customerToDelete, setCustomerToDelete] = React.useState('');
+  const [consultantToDelete, setConsultantToDelete] = React.useState('');
+
+  const handleCreateCustomerOpen = () => {
+    showCreateCustomerDialog(true);
+  };
+
+  const handleCreateCustomerClose = () => {
+    showCreateCustomerDialog(false);
+  };
+
+  const handleDeleteCustomerOpen = () => {
+    showDeleteCustomerDialog(true);
+  };
+
+  const handleDeleteCustomerClose = () => {
+    showDeleteCustomerDialog(false);
+  };
+
+  const handleDeleteConsultantOpen = () => {
+    showDeleteConsultantDialog(true);
+  };
+
+  const handleDeleteConsultantClose = () => {
+    showDeleteConsultantDialog(false);
+  };
+
+  const handleCreateCustomer = () => {
+    var payload = {
+      customer: customerName,
+      department: customerDepartment
+    }
+    axios
+      .post("http://localhost:4000/customers", payload, {
+      })
+      .then((response) => {
+        setCustomerOptions(customer => [...customer, response.data.customer]);
+        showCreateCustomerDialog(false);
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  }
+
+  const handleDeleteCustomer = (customerToDelete) => {
+
+    axios
+      .delete("http://localhost:4000/customers/" + customerToDelete, {
+      })
+      .then((response) => {
+        let customers = customerOptions.filter(customer => customer != customerToDelete)
+        setCustomerOptions(customers)
+        handleDeleteCustomerClose()
+        window.location.href = "/measures"
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  }
+  const handleDeleteConsultant = (consultantToDelete) => {
+
+    axios
+      .delete("http://localhost:4000/api/users/" + consultantToDelete, {
+      })
+      .then((response) => {
+        let consultants = consultantOptions.filter(consultant => consultant != consultantToDelete)
+        setConsultantOptions(consultants)
+        handleDeleteConsultantClose()
+
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  }
+
+
+
+
+  const changeCustomerName = (e) => {
+    setCustomerName(e.target.value)
+  }
+
+  const changeCustomerDepartment = (e) => {
+    setCustomerDepartment(e.target.value)
+  }
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -135,30 +394,70 @@ function App() {
         </Alert>
       </Snackbar>
       {rows.length > 0 ?
-        <MaterialTable
-          icons={tableIcons}
-          title="Customer Measures"
-          columns={columns}
-          data={rows}
-          editable={{
-            onRowAdd: newData =>
-              new Promise((resolve, reject) => {
-                if (Object.keys(newData).length < 8) {
-                  setOpen(true);
-                  reject()
-                }
-                else {
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Select Customer</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={selectedCustomer}
+              onChange={changeCustomerSelected}
+            >
+              {customersAssigned.map(item =>
+                <MenuItem
+                  value={item.customerId}
+                >
+                  {item.customer}
+                </MenuItem>
+              )}
+            </Select>
+          </FormControl>
+          <MaterialTable
+            icons={tableIcons}
+            title="Customer Measures"
+            columns={columns}
+            data={rows}
+            editable={{
+              onRowAdd: newData =>
+                new Promise((resolve, reject) => {
+                  if (Object.keys(newData).length < 8) {
+                    setOpen(true);
+                    reject()
+                  }
+                  else {
+                    setTimeout(() => {
+                      newData.customerId = localStorage.getItem('customerId') + ''
+                      resolve();
+                      axios
+                        .post("http://localhost:4000/measures", newData, {
+                          headers: { 'x-access-token': localStorage.getItem('token') }
+                        })
+                        .then((response) => {
+                          setRows(prevState => {
+                            const data = [...prevState];
+                            data.push(response.data);
+                            return data;
+                          })
+                        })
+                        .catch(function (e) {
+                          console.log(e);
+                        }, 600);
+                    })
+                  }
+                }),
+              onRowUpdate: (newData, oldData) =>
+                new Promise(resolve => {
                   setTimeout(() => {
                     newData.customerId = localStorage.getItem('customerId') + ''
                     resolve();
                     axios
-                      .post("http://localhost:4000/measures", newData, {
+                      .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
                         headers: { 'x-access-token': localStorage.getItem('token') }
                       })
                       .then((response) => {
                         setRows(prevState => {
                           const data = [...prevState];
-                          data.push(response.data);
+                          data[data.indexOf(oldData)] = newData;
                           return data;
                         })
                       })
@@ -166,54 +465,217 @@ function App() {
                         console.log(e);
                       }, 600);
                   })
-                }
-              }),
-            onRowUpdate: (newData, oldData) =>
-              new Promise(resolve => {
-                setTimeout(() => {
-                  newData.customerId = localStorage.getItem('customerId') + ''
-                  resolve();
-                  axios
-                    .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
-                      headers: { 'x-access-token': localStorage.getItem('token') }
-                    })
-                    .then((response) => {
-                      setRows(prevState => {
-                        const data = [...prevState];
-                        data[data.indexOf(oldData)] = newData;
-                        return data;
-                      })
-                    })
-                    .catch(function (e) {
-                      console.log(e);
-                    }, 600);
-                })
 
-              }),
-            onRowDelete: oldData =>
-              new Promise(resolve => {
-                setTimeout(() => {
-                  resolve();
-                  axios
-                    .delete("http://localhost:4000/measures/" + oldData.measureId, {
-                    })
-                    .then((response) => {
-                      setRows(prevState => {
-                        const data = [...prevState];
-                        data.splice(data.indexOf(oldData), 1);
-                        return data;
+                }),
+              onRowDelete: oldData =>
+                new Promise(resolve => {
+                  setTimeout(() => {
+                    resolve();
+                    axios
+                      .delete("http://localhost:4000/measures/" + oldData.measureId, {
                       })
-                    })
-                    .catch(function (e) {
-                      console.log(e);
-                    }, 600);
-                })
-              }),
-          }}
-        />
-        : <Typography variant="h6" className={classes.title}>
+                      .then((response) => {
+                        setRows(prevState => {
+                          const data = [...prevState];
+                          data.splice(data.indexOf(oldData), 1);
+                          return data;
+                        })
+                      })
+                      .catch(function (e) {
+                        console.log(e);
+                      }, 600);
+                  })
+                }),
+            }}
+          />
+        </div>
+        : isAdmin == false ? <Typography variant="h6" className={classes.title}>
           You have not been assigned customers at the moment, please contact your administrator.
-    </Typography>}
+          </Typography>
+          :
+          <div>
+            <div>
+              <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleCreateCustomerOpen}>
+                Create Customer
+      </Button>
+              <Dialog open={createCustomerDialog} onClose={handleCreateCustomerClose} aria-labelledby="form-dialog-title">
+
+                <DialogTitle id="form-dialog-title">Create</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Please enter the customer details
+          </DialogContentText>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    onChange={changeCustomerName}
+                    label="Customer Name"
+                    value={customerName}
+                    fullWidth
+                  />
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    onChange={changeCustomerDepartment}
+                    value={customerDepartment}
+                    label="Department"
+                    fullWidth
+                  />
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCreateCustomerClose} color="primary">
+                    Cancel
+          </Button>
+                  <Button onClick={handleCreateCustomer} color="primary">
+                    Create
+          </Button>
+                </DialogActions>
+              </Dialog>
+
+
+              <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeleteCustomerOpen}>
+                Delete Customer
+      </Button>
+              <Dialog open={deleteCustomerDialog} onClose={handleDeleteCustomerClose} aria-labelledby="form-dialog-title">
+
+                <DialogTitle id="form-dialog-title">Delete Customer</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Please select the customer to delete
+          </DialogContentText>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-label">Customer</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={customerToDelete}
+                      onChange={handleCustomerToDeleteChange}
+                    >
+                      {customerOptions.map(item => (
+                        <MenuItem
+                          value={item}
+                        >
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDeleteCustomerClose} color="primary">
+                    Cancel
+          </Button>
+                  <Button onClick={() => { handleDeleteCustomer(customerToDelete) }} color="primary">
+                    Delete
+          </Button>
+                </DialogActions>
+              </Dialog>
+
+
+              <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeleteConsultantOpen}>
+                Delete Consultant
+            </Button>
+              <Dialog open={deleteConsultantDialog} onClose={handleDeleteConsultantClose} aria-labelledby="form-dialog-title">
+
+                <DialogTitle id="form-dialog-title">Delete Consultant</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Please select the consultant to delete
+          </DialogContentText>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={consultantToDelete}
+                      onChange={handleConsultantToDeleteChange}
+                    >
+                      {consultantOptions.map(item => (
+                        <MenuItem
+                          value={item}
+                        >
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDeleteConsultantClose} color="primary">
+                    Cancel
+          </Button>
+                  <Button onClick={() => { handleDeleteConsultant(consultantToDelete) }} color="primary">
+                    Delete
+          </Button>
+                </DialogActions>
+              </Dialog>
+            </div>
+            <FormControl style={{ marginLeft: "60px" }} className={classes.formControl}>
+              <InputLabel id="demo-simple-select-label">Customer</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={customers}
+                onChange={handleCustomerChange}
+              >
+                {customerOptions.map(item => (
+                  <MenuItem
+                    value={item}
+                  >
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl style={{ marginLeft: "20px" }} className={classes.formControl}>
+              <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={consultant}
+                onChange={handleConsultantChange}
+              >
+                {consultantOptions.map(item => (
+                  <MenuItem
+                    value={item}
+                  >
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Button
+              onClick={handleConsultant}
+
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+            >
+              Add
+          </Button>
+
+            {customerOptions.map(customer => (
+              <div style={{ marginLeft: "60px" }} className={classes.customer}>
+                {customer} - {consultantAccess.map(consultant => {
+
+                  return (consultant.customer === customer) ?
+                    // <span> {consultant.email} </span>
+                    <Chip
+
+                      label={consultant.email}
+
+                      onDelete={() => handleDelete(consultant.email, customer)}
+                    />
+
+                    : null
+                })}
+              </div>
+            ))}
+
+          </div>
+      }
     </div>
   );
 }
