@@ -96,11 +96,10 @@ router.put('/:email', async (req, res) => {
         { email: req.params.email },
         {
           $set: {
-            name: req.body.name, email: req.body.email, password: req.body.password, isActive: req.body.isActive
+            name: req.body.name, email: req.body.email, isActive: req.body.isActive
           }
         }
       )
-      updatedUser.password = await bcrypt.hash(updatedUser.password, 10);
       await updatedUser.save(); 
       res.json(updatedUser)
     } catch (err) {
