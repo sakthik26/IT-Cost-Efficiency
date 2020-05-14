@@ -96,6 +96,24 @@ router.post("/", async (req, res) => {
     });
 });
 
+// Update name, email, password (hash the password during update) of the user
+router.put('/:email', async (req, res) => {
+    try {
+        const updatedUser = await User.findOneAndUpdate(
+            { email: req.params.email },
+            {
+                $set: {
+                    name: req.body.name, email: req.body.email, isActive: req.body.isActive
+                }
+            }
+        )
+        await updatedUser.save();
+        res.json(updatedUser)
+    } catch (err) {
+        res.json({ message: err });
+    }
+});
+
 router.delete('/:email', async (req, res) => {
     try {
         const removedUser = await User.remove({ email: req.params.email })

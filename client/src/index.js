@@ -15,6 +15,7 @@ const routing = (
         <Route exact path="/measures" component={App} />
         <Route exact path="/" component={SignUp} />
         <Route exact path="/signin" component={SignIn} />
+        {/* <Route exact path="/admin" component={Admin} /> */}
       </div>
     </Provider>
   </Router>

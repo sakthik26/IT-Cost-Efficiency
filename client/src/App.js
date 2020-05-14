@@ -132,6 +132,10 @@ function App() {
   const handleConsultantToDeleteChange = (event) => {
     setConsultantToDelete(event.target.value);
   };
+
+  const handleConsultantToDeactivateChange = (event) => {
+    setConsultantToDeactivate(event.target.value);
+  };
   const handleConsultantChange = (event) => {
     setConsultant(event.target.value);
   };
@@ -288,8 +292,10 @@ function App() {
   const [createCustomerDialog, showCreateCustomerDialog] = React.useState(false);
   const [deleteCustomerDialog, showDeleteCustomerDialog] = React.useState(false);
   const [deleteConsultantDialog, showDeleteConsultantDialog] = React.useState(false);
+  const [deactivateConsultantDialog, showDeactivateConsultantDialog] = React.useState(false);
   const [customerToDelete, setCustomerToDelete] = React.useState('');
   const [consultantToDelete, setConsultantToDelete] = React.useState('');
+  const [consultantToDeactivate, setConsultantToDeactivate] = React.useState('');
 
   const handleCreateCustomerOpen = () => {
     showCreateCustomerDialog(true);
@@ -313,6 +319,14 @@ function App() {
 
   const handleDeleteConsultantClose = () => {
     showDeleteConsultantDialog(false);
+  };
+
+  const handleDeactivateConsultantOpen = () => {
+    showDeactivateConsultantDialog(true);
+  };
+
+  const handleDeactivateConsultantClose = () => {
+    showDeactivateConsultantDialog(false);
   };
 
   const handleCreateCustomer = () => {
@@ -362,7 +376,21 @@ function App() {
         console.log(e);
       });
   }
+  const handleDeactivateConsultant = (consultantToDeactivate) => {
 
+    axios
+      .put("http://localhost:4000/api/users/" + consultantToDeactivate, {
+        "email": consultantToDeactivate, "isActive": false
+      })
+      .then((response) => {
+
+        handleDeactivateConsultantClose()
+        alert('Consultant has been deactivated')
+      })
+      .catch(function (e) {
+        console.log(e);
+      });
+  }
 
 
 
@@ -608,6 +636,45 @@ function App() {
           </Button>
                   <Button onClick={() => { handleDeleteConsultant(consultantToDelete) }} color="primary">
                     Delete
+          </Button>
+                </DialogActions>
+              </Dialog>
+
+              <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeactivateConsultantOpen}>
+                Deactivate Consultant
+            </Button>
+              <Dialog open={deactivateConsultantDialog} onClose={handleDeactivateConsultantClose} aria-labelledby="form-dialog-title">
+
+                <DialogTitle id="form-dialog-title">Deactivate Consultant</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Please select the consultant to deactivate
+          </DialogContentText>
+                  <FormControl className={classes.formControl}>
+                    <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={consultantToDeactivate}
+                      onChange={handleConsultantToDeactivateChange}
+                    >
+                      {consultantOptions.map(item => (
+                        <MenuItem
+                          value={item}
+                        >
+                          {item}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleDeactivateConsultantClose} color="primary">
+                    Cancel
+          </Button>
+                  <Button onClick={() => { handleDeactivateConsultant(consultantToDeactivate) }} color="primary">
+                    Deactivate
           </Button>
                 </DialogActions>
               </Dialog>
