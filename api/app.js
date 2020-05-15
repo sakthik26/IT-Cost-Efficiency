@@ -56,6 +56,23 @@ app.use("/api/users", usersRoute);
 const userRightsRouter = require('./routes/userRights');
 app.use("/userrights", userRightsRouter);
 
+//Baseline Router
+const baselineRouter = require('./routes/baseline');
+app.use("/baseline", baselineRouter);
+
+//BaselineBreakdown Router
+const baselineBreakdownRouter = require('./routes/baselineBreakdown');
+app.use("/baselinebreakdown", baselineBreakdownRouter);
+
+//CostType Router
+const costTypeRouter = require('./routes/costType');
+app.use("/costtype", costTypeRouter);
+
+//CostTypeGroup Router
+const costTypeGroupRouter = require('./routes/costTypeGroup');
+app.use("/costtypegroup", costTypeGroupRouter);
+
+
 
 
 const port = process.env.PORT || 4000;
