@@ -421,7 +421,7 @@ function App() {
           Please enter values for all the fields
         </Alert>
       </Snackbar>
-      {rows.length > 0 ?
+      {rows.length > 0 && localStorage.getItem('isActive') == "true" ?
         <div>
           <FormControl className={classes.formControl}>
             <InputLabel id="demo-simple-select-label">Select Customer</InputLabel>

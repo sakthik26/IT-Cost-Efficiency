@@ -53,6 +53,7 @@ router.post('/login', async (req, res) => {
                     message: 'Authentication successful!',
                     id: user.id,
                     email: user.email,
+                    isActive: user.isActive,
                     customerId: userRight !== null ? userRight.customerId : null,
                     token: token
                 });

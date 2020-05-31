@@ -8,6 +8,7 @@ import configureStore from './store'
 import * as serviceWorker from './serviceWorker';
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
+import Settings from './pages/Settings'
 const routing = (
   <Router>
     <Provider store={configureStore()}>
@@ -15,6 +16,7 @@ const routing = (
         <Route exact path="/measures" component={App} />
         <Route exact path="/" component={SignUp} />
         <Route exact path="/signin" component={SignIn} />
+        <Route exact path="/settings" component={Settings} />
         {/* <Route exact path="/admin" component={Admin} /> */}
       </div>
     </Provider>
