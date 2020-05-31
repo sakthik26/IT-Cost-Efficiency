@@ -6,9 +6,29 @@ const baselineSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
+  customer:
+  {
+    type:String
+  },
+  costTypeId:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'costType'
+  },
+  costType:
+  {
+    type: String
+  },
+  totalCost:
+  {
+    type: Number
+  },
+  year:
+  {
+    type: Number
+  },
   description: {
     type: String
-
   }
 
 });

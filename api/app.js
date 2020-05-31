@@ -60,10 +60,6 @@ app.use("/userrights", userRightsRouter);
 const baselineRouter = require('./routes/baseline');
 app.use("/baseline", baselineRouter);
 
-//BaselineBreakdown Router
-const baselineBreakdownRouter = require('./routes/baselineBreakdown');
-app.use("/baselinebreakdown", baselineBreakdownRouter);
-
 //CostType Router
 const costTypeRouter = require('./routes/costType');
 app.use("/costtype", costTypeRouter);

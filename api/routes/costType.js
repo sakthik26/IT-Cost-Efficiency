@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const CostType = require("../models/costType");
+const CostTypeGroup = require("../models/costTypeGroup");
 
 
 // Gets all the cost types
@@ -15,12 +16,23 @@ router.get('/', async (req, res) => {
 })
 
 // Creates new cost types in the database
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
     const costType  = new CostType({
-      costTypeGroupId: req.body.costTypeGroupId,
+      costTypeGroup: req.body.costTypeGroup,
       costType: req.body.costType,
+      costType_year: req.body.costType_year,
+      amount: req.body.amount,
       description: req.body.description
     });
+
+//compare cost type group name from costTypeGroup and costType collections and assign corresponding costTypeGroupId
+const costTypeGroup = await CostTypeGroup.findOne({ costTypeGroup: req.body.costTypeGroup });
+console.log(costTypeGroup);
+if(costType.costTypeGroup == costTypeGroup.costTypeGroup)
+{
+  costType.costTypeGroupId = costTypeGroup._id;
+}
+  
   
     costType.save()
       .then(data => {
