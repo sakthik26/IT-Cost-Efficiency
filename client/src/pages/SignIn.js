@@ -65,6 +65,10 @@ export default function SignIn() {
                 localStorage.setItem('token', response.data.token)
                 localStorage.setItem('id', response.data.id)
                 localStorage.setItem('customerId', response.data.customerId)
+                localStorage.setItem('isActive', response.data.isActive)
+                if (response.data.email) {
+                    localStorage.setItem('emailId', response.data.email)
+                }
                 window.location.href = '/measures';
             })
             .catch(function (e) {

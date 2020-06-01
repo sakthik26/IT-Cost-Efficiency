@@ -10,13 +10,28 @@ var ObjectId = require('mongodb').ObjectID;
 router.get('/', auth, async (req, res) => {
   //res.send('it works')
   let userId = req.query.id
-  console.log('here' + userId)
+  let customerId = req.query.customer
+  console.log('hereIam' + userId)
   if (userId) {
     UserRight.find({ userId: userId }).populate('userId').exec(function (err, user) {
       if (err) throw err;
       else {
-        console.log(user[0])
-        let customerId = user[0].customerId
+        if (!user[0]) {
+          return
+        }
+        console.log('Testing here')
+        let objId = new ObjectId(req.query.customer);
+        console.log(objId)
+        var customerId = user[0].customerId
+        for (var i = 0; i < user.length; i++) {
+          if (user[i].customerId.equals(objId)) {
+            console.log(user[i].customerId.equals(objId) + ' ' + user[i].customerId)
+
+            customerId = user[i].customerId
+            break;
+          }
+        }
+        // let customerId = user[0].customerId
 
         Measures.find({ customerId: customerId }).populate('customerId').exec(function (err, measures) {
           if (err) throw err;

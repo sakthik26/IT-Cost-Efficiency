@@ -14,6 +14,15 @@ router.get("/current", auth, async (req, res) => {
     res.send(user);
 });
 
+router.get("/", async (req, res) => {
+    try {
+        const users = await User.find()
+        res.json(users)
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+});
+
 router.post('/login', async (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
@@ -43,7 +52,9 @@ router.post('/login', async (req, res) => {
                     success: true,
                     message: 'Authentication successful!',
                     id: user.id,
-                    customerId: userRight !== undefined && userRight !== null ? userRight.customerId : null,
+                    email: user.email,
+                    isActive: user.isActive,
+                    customerId: userRight !== null ? userRight.customerId : null,
                     token: token
                 });
             } else {
@@ -86,38 +97,31 @@ router.post("/", async (req, res) => {
     });
 });
 
-
-
-
 // Update name, email, password (hash the password during update) of the user
 router.put('/:email', async (req, res) => {
     try {
-      const updatedUser = await User.findOneAndUpdate(
-        { email: req.params.email },
-        {
-          $set: {
-            name: req.body.name, email: req.body.email, isActive: req.body.isActive
-          }
-        }
-      )
-      await updatedUser.save(); 
-      res.json(updatedUser)
+        const updatedUser = await User.findOneAndUpdate(
+            { email: req.params.email },
+            {
+                $set: {
+                    name: req.body.name, email: req.body.email, isActive: req.body.isActive
+                }
+            }
+        )
+        await updatedUser.save();
+        res.json(updatedUser)
     } catch (err) {
-      res.json({ message: err });
+        res.json({ message: err });
     }
-  });
-
-
-// Delete user based on email
-router.delete('/:email', async (req, res) => {
-  try {
-    const removedUser = await User.remove({ email: req.params.email })
-    res.json(removedUser)
-  } catch (err) {
-    res.json({ message: err })
-  }
-
 });
 
+router.delete('/:email', async (req, res) => {
+    try {
+        const removedUser = await User.remove({ email: req.params.email })
+        res.json(removedUser)
+    } catch (err) {
+        res.json({ message: err })
+    }
 
+});
 module.exports = router;
