@@ -94,6 +94,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function Settings() {
+    const [baselineTotalCostColumns, setBaselineTotalCostColumns] = React.useState(
+        [
+            { title: '2020', field: '2020', sorting: true },
+            { title: '2021', field: '2021' },
+            { title: '2022', field: '2022' },
+            { title: '2023', field: '2023' },
+            { title: '2024', field: '2024' },
+        ]);
     const [baselineColumns, setBaselineColumns] = React.useState(
         [
             { title: 'Cost Type', field: 'costType' },
@@ -103,6 +111,7 @@ function Settings() {
             { title: '2023', field: '2023' },
             { title: '2024', field: '2024' },
         ]);
+
     const [savingsColumns, setSavingsColumns] = React.useState(
         [
             { title: 'Cost Type', field: 'costType' },
@@ -112,9 +121,11 @@ function Settings() {
             { title: '2023', field: '2023' },
             { title: '2024', field: '2024' },
         ])
+
     const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
     { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
     { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
+    const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
     const [isAdmin, setAdmin] = React.useState(false);
     const [customers, setCustomers] = React.useState('');
     const [customerOptions, setCustomerOptions] = React.useState([]);
@@ -406,6 +417,14 @@ function Settings() {
         { title: '2029', field: '2029' }]);
     }
 
+    const handleBaselineTotalCostRows = (event) => {
+        setBaselineTotalCostColumns(columns => [...columns, { title: '2025', field: '2025' },
+        { title: '2026', field: '2026' },
+        { title: '2027', field: '2027' },
+        { title: '2028', field: '2029' },
+        { title: '2029', field: '2029' }]);
+    }
+
     const handleSavingsColumns = (event) => {
         setSavingsColumns(columns => [...columns, { title: '2025', field: '2025' },
         { title: '2026', field: '2026' },
@@ -463,12 +482,51 @@ function Settings() {
                     <Typography style={{ marginLeft: "20px" }}>
                         <h2> Targets & Baseline </h2>
                     </Typography>
+                    <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineTotalCostRows}>
+                        +  Add Columns
+      </Button>
+                    <MaterialTable
+                        icons={tableIcons}
+                        title="Total IT Cost"
+                        columns={baselineTotalCostColumns}
+                        options={{
+                            paging: false,
+                            search: false,
+                        }}
+                        data={baselineTotalCostRows}
+                        editable={{
+                            onRowUpdate: (newData, oldData) =>
+                                new Promise(resolve => {
+                                    setTimeout(() => {
+                                        newData.customerId = localStorage.getItem('customerId') + ''
+                                        resolve();
+                                        axios
+                                            .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+                                                headers: { 'x-access-token': localStorage.getItem('token') }
+                                            })
+                                            .then((response) => {
+                                                setRows(prevState => {
+                                                    const data = [...prevState];
+                                                    data[data.indexOf(oldData)] = newData;
+                                                    return data;
+                                                })
+                                            })
+                                            .catch(function (e) {
+                                                console.log(e);
+                                            }, 600);
+                                    })
+
+                                }),
+
+                        }}
+                    />
+
                     <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineColumns}>
                         +  Add Columns
       </Button>
                     <MaterialTable
                         icons={tableIcons}
-                        title="Cost Baseline"
+                        title="Baseline Cost Types"
                         columns={baselineColumns}
                         data={rows}
                         editable={{
