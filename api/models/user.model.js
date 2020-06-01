@@ -5,7 +5,6 @@ const mongoose = require('mongoose');
 
 //simple schema
 const UserSchema = new mongoose.Schema({
-
     name: {
         type: String,
         required: true,
@@ -27,11 +26,12 @@ const UserSchema = new mongoose.Schema({
     },
     //give different access rights if admin or not 
     isAdmin: Boolean,
-    isActive:
-        {
-            type: Boolean,
-            default: true
-        }
+    isActive: 
+    {
+        type: Boolean,
+        default: true
+    }
+
 });
 
 
