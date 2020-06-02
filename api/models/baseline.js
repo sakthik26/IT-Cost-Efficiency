@@ -10,15 +10,6 @@ const baselineSchema = new mongoose.Schema({
   {
     type:String
   },
-  costTypeId:
-  {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'costType'
-  },
-  costType:
-  {
-    type: String
-  },
   totalCost:
   {
     type: Number
