@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
 
 const costTypeSchema = new mongoose.Schema({
+  customerId:
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer'
+  },
+  customer:
+  {
+    type: String
+  },
   costTypeGroupId: 
   {
     type: mongoose.Schema.Types.ObjectId,
@@ -14,7 +23,7 @@ const costTypeSchema = new mongoose.Schema({
   {
     type: String
   },
-  costType_year:
+  costTypeYear:
   {
     type: Number
   },
@@ -25,7 +34,9 @@ const costTypeSchema = new mongoose.Schema({
   description: {
     type: String
 
-  }
+  },
+
+
 
 });
 
