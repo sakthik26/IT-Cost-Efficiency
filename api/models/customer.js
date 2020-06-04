@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
-
   customer: {
     type: String,
     required: true

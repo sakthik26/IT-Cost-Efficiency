@@ -19,7 +19,6 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
 
   const userrights = new UserRight({
-
     customer: req.body.customer,
     email: req.body.email,
     permission: req.body.permission,
@@ -49,8 +48,6 @@ router.post('/', async (req, res) => {
     });
 });
 
-
-// Delete user right based on id 
 // Delete user right based on email
 router.delete('/:email', async (req, res) => {
   try {
