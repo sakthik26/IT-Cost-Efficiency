@@ -1,33 +1,41 @@
 const mongoose = require('mongoose');
 
 const costTypeSchema = new mongoose.Schema({
-  costTypeGroupId: 
-  {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'costTypeGroup'
-  },
+  customerId:
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Customer'
+    },
+  customer:
+    {
+      type: String
+    },
+  costTypeGroupId:
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'costTypeGroup'
+    },
   costTypeGroup:
-  {
-    type: String
-  },
+    {
+      type: String
+    },
   costType:
-  {
-    type: String
-  },
-  costType_year:
-  {
-    type: Number
-  },
+    {
+      type: String
+    },
+  costTypeYear:
+    {
+      type: Number
+    },
   amount:
-  {
-    type: Number
-  },
+    {
+      type: Number
+    },
   description: {
     type: String
 
   }
 
 });
-
 
 module.exports = mongoose.model('CostType', costTypeSchema);

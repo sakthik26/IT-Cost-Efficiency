@@ -96,35 +96,34 @@ const useStyles = makeStyles(theme => ({
 function Settings() {
     const [baselineTotalCostColumns, setBaselineTotalCostColumns] = React.useState(
         [
-            { title: '2020', field: '2020', sorting: true },
-            { title: '2021', field: '2021' },
-            { title: '2022', field: '2022' },
-            { title: '2023', field: '2023' },
-            { title: '2024', field: '2024' },
+            { title: 'Overall', field: 'overall' },
+            { title: '2020(€)', field: '2020', sorting: true },
+            { title: '2021(€)', field: '2021' },
+            { title: '2022(€)', field: '2022' },
+            { title: '2023(€)', field: '2023' },
+            { title: '2024(€)', field: '2024' },
         ]);
     const [baselineColumns, setBaselineColumns] = React.useState(
         [
             { title: 'Cost Type', field: 'costType' },
-            { title: '2020', field: '2020', sorting: true },
-            { title: '2021', field: '2021' },
-            { title: '2022', field: '2022' },
-            { title: '2023', field: '2023' },
-            { title: '2024', field: '2024' },
+            { title: '2020(€)', field: '2020', sorting: true },
+            { title: '2021(€)', field: '2021' },
+            { title: '2022(€)', field: '2022' },
+            { title: '2023(€)', field: '2023' },
+            { title: '2024(€)', field: '2024' },
         ]);
 
     const [savingsColumns, setSavingsColumns] = React.useState(
         [
             { title: 'Cost Type', field: 'costType' },
-            { title: '2020', field: '2020', sorting: true },
-            { title: '2021', field: '2021' },
-            { title: '2022', field: '2022' },
-            { title: '2023', field: '2023' },
-            { title: '2024', field: '2024' },
+            { title: '2020(€)', field: '2020', sorting: true },
+            { title: '2021(€)', field: '2021' },
+            { title: '2022(€)', field: '2022' },
+            { title: '2023(€)', field: '2023' },
+            { title: '2024(€)', field: '2024' },
         ])
 
-    const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-    { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-    { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
+    const [rows, setRows] = React.useState([]);
     const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
     const [isAdmin, setAdmin] = React.useState(false);
     const [customers, setCustomers] = React.useState('');
@@ -248,12 +247,62 @@ function Settings() {
         if (localStorage.getItem('emailId') && localStorage.getItem('emailId') === 'admin@gmail.com') {
             setAdmin(true)
         }
-        fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+        fetch('http://localhost:4000/baseline?customer=' + localStorage.getItem('customerId'), {
             method: 'GET',
             headers: { 'x-access-token': localStorage.getItem('token') || '' }
         })
             .then(res => res.json())
             .then(data => {
+                console.log(data)
+
+                // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
+                var baselineRows = {}
+                var baselineData = []
+                for (var i = 0; i < data.length; i++) {
+
+                    baselineRows[data[i].year] = data[i].totalCost
+                }
+                console.log(baselineRows)
+
+                baselineData.push(baselineRows)
+
+                //console.log(costTypeData)
+                setBaselineTotalCostRows(baselineData);
+                // console.log(data)
+                // setRows(data);
+            })
+            .catch(error => console.log(error));
+        fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+
+                // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
+                var costTypes = {}
+                var costTypeData = []
+                for (var i = 0; i < data.length; i++) {
+                    if (costTypes[data[i].costType]) {
+                        costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
+                    }
+                    else {
+                        costTypes[data[i].costType] = {}
+                        costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
+                    }
+                }
+                console.log(costTypes)
+                for (var i in costTypes) {
+                    costTypes[i]['costType'] = i
+                    costTypeData.push(costTypes[i])
+                }
+                console.log(costTypeData)
+                setRows(costTypeData);
                 // console.log(data)
                 // setRows(data);
             })
@@ -532,40 +581,59 @@ function Settings() {
                         editable={{
                             onRowAdd: newData =>
                                 new Promise((resolve, reject) => {
-                                    if (Object.keys(newData).length < 8) {
-                                        setOpen(true);
-                                        reject()
-                                    }
-                                    else {
-                                        setTimeout(() => {
-                                            newData.customerId = localStorage.getItem('customerId') + ''
-                                            resolve();
-                                            axios
-                                                .post("http://localhost:4000/measures", newData, {
+                                    // if (Object.keys(newData).length < 8) {
+                                    //     setOpen(true);
+                                    //     reject()
+                                    // }
+                                    // else {
+                                    setTimeout(() => {
+                                        //newData.customerId = localStorage.getItem('customerId') + ''
+                                        resolve();
+                                        axios
+                                            .post("http://localhost:4000/costtype/", {
+                                                "customer": "SBI",
+                                                "costTypeGroup": "printingforexecutives",
+                                                "costType": "new",
+                                                "costTypeYear": "2020",
+                                                "amount": "5000",
+                                                "description": "costs incurred for printing"
+                                            }, {
                                                     headers: { 'x-access-token': localStorage.getItem('token') }
                                                 })
-                                                .then((response) => {
-                                                    setRows(prevState => {
-                                                        const data = [...prevState];
-                                                        data.push(response.data);
-                                                        return data;
-                                                    })
+                                            .then((response) => {
+                                                setRows(prevState => {
+                                                    const data = [...prevState];
+                                                    data.push({
+                                                        2020: 5000,
+                                                        costType: "new"
+                                                    });
+                                                    return data;
                                                 })
-                                                .catch(function (e) {
-                                                    console.log(e);
-                                                }, 600);
-                                        })
-                                    }
+                                            })
+                                            .catch(function (e) {
+                                                console.log(e);
+                                            }, 600);
+                                    })
+                                    // }
                                 }),
                             onRowUpdate: (newData, oldData) =>
                                 new Promise(resolve => {
+                                    var costType
                                     setTimeout(() => {
-                                        newData.customerId = localStorage.getItem('customerId') + ''
+
+                                        // newData.customerId = localStorage.getItem('customerId') + ''
                                         resolve();
                                         axios
-                                            .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
-                                                headers: { 'x-access-token': localStorage.getItem('token') }
-                                            })
+                                            .put("http://localhost:4000/measures/" + localStorage.getItem('customerId') + '/' + '2020' / newData.costType, {
+                                                "customer": "SBI",
+                                                "costTypeGroup": "printingforexecutives",
+                                                "costType": "Printing",
+                                                "costTypeYear": "2020",
+                                                "amount": "50",
+                                                "description": "costs incurred for printing"
+                                            }, {
+                                                    headers: { 'x-access-token': localStorage.getItem('token') }
+                                                })
                                             .then((response) => {
                                                 setRows(prevState => {
                                                     const data = [...prevState];
@@ -584,7 +652,7 @@ function Settings() {
                                     setTimeout(() => {
                                         resolve();
                                         axios
-                                            .delete("http://localhost:4000/measures/" + oldData.measureId, {
+                                            .delete("http://localhost:4000/costtype/" + localStorage.getItem('customerId') + '/' + oldData.costType, {
                                             })
                                             .then((response) => {
                                                 setRows(prevState => {
