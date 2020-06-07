@@ -53,15 +53,26 @@ if(costType.customer == customer.customer)
 
 
   // Update costType based on customer name
-  router.put('/:customer/:costTypeYear/:costType', async (req, res) => {
+  router.put('/:customer', async (req, res) => {
+    var objForUpdate = {};
+    if (req.body.customer) objForUpdate.customer = req.body.customer; 
+    if (req.body.costTypeGroup) objForUpdate.costTypeGroup = req.body.costTypeGroup; 
+    if (req.body.costType) objForUpdate.costType = req.body.costType;
+    if (req.body.costTypeYear) objForUpdate.costTypeYear = req.body.costTypeYear; 
+    if (req.body.description) objForUpdate.description = req.body.description;
+
+    const tmp = await CostType.find({ customer: req.body.customer})
+    console.log(tmp);
+    for(i=0; req.body.costTypeYear &&  i < req.body.costTypeYear.length; i++)
+    {
+      console.log(tmp)
+    }
+
     try {
-      const updatedCostType = await CostType.findOneAndUpdate(
-        { customer: req.params.customer, costTypeYear: req.params.costTypeYear, costType: req.params.costType },
+     const updatedCostType = await CostType.findOneAndUpdate(
+        { customer: req.params.customer },
         {
-          $set: {
-            customer: req.body.customer, costTypeGroup: req.body.costTypeGroup, costType: req.body.costType, costTypeYear: req.body.costTypeYear, amount: req.body.amount,
-            description: req.body.description
-          }
+          $set: objForUpdate
         }
       )
       await updatedCostType.save();

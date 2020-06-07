@@ -39,23 +39,21 @@ router.post('/', (req, res) => {
 
 // Update customers based on email
 router.put('/:customer', async (req, res) => {
+  var objForUpdate = {};
+  if (req.body.customer) objForUpdate.customer = req.body.customer; 
+  if (req.body.department) objForUpdate.department = req.body.department; 
+  if (req.body.contact) objForUpdate.contact = req.body.contact;
+  if (req.body.address) objForUpdate.address = req.body.address;
+  if (req.body.project) objForUpdate.project = req.body.project;
+
   try {
     const updatedCustomer = await Customer.findOneAndUpdate(
       { customer: req.params.customer },
       {
-        $set: {
-          customer: req.body.customer, department: req.body.department, contact: req.body.contact,
-          address: req.body.address, project: req.body.project
-        }
+        $set: objForUpdate
       }
     )
 
-   /*const userrights = await UserRights.findOne({ customerId: req.body.customerId });
-   if(userrights.customerId == updatedCustomer._id)
-    {
-      userrights.customer = updatedCustomer.customer;
-    }
-    await userrights.save();*/
     await updatedCustomer.save();
     res.json(updatedCustomer)
     

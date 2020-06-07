@@ -10,13 +10,10 @@ const baselineSchema = new mongoose.Schema({
   {
     type:String
   },
-  totalCost:
-  {
-    type: Number
-  },
   year:
   {
-    type: Number
+    totalCost: Number,
+    year: Number
   },
   description: {
     type: String
