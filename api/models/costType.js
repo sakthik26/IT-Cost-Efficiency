@@ -24,17 +24,15 @@ const costTypeSchema = new mongoose.Schema({
     type: String
   },
   costTypeYear:
-  {
-    type: Number
-  },
-  amount:
-  {
-    type: Number
-  },
+  [{
+      year: Number,
+      amount: Number,
+      _id: false
+  }],
   description: {
     type: String
 
-  },
+  }
 
 
 

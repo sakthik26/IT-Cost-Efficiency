@@ -23,7 +23,6 @@ router.post('/', async (req, res) => {
       costTypeGroup: req.body.costTypeGroup,
       costType: req.body.costType,
       costTypeYear: req.body.costTypeYear,
-      amount: req.body.amount,
       description: req.body.description
     });
 
