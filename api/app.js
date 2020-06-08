@@ -68,6 +68,11 @@ app.use("/costtype", costTypeRouter);
 const costTypeGroupRouter = require('./routes/costTypeGroup');
 app.use("/costtypegroup", costTypeGroupRouter);
 
+//Savings Router
+const savingsRouter = require('./routes/savings');
+app.use("/savings", savingsRouter);
+
+
 
 
 
