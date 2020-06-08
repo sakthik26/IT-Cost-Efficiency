@@ -19,23 +19,31 @@ const costTypeSchema = new mongoose.Schema({
     {
       type: String
     },
+  type:
+    {
+      type: String
+    },
   costType:
     {
       type: String
     },
   costTypeYear:
-    {
-      type: Number
-    },
-  amount:
-    {
-      type: Number
-    },
+    [{
+      year: Number,
+      amount: Number,
+      _id: false
+    }],
   description: {
     type: String
 
+  },
+  sphereOfAction: {
+    type: String
   }
 
+
+
 });
+
 
 module.exports = mongoose.model('CostType', costTypeSchema);
