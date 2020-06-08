@@ -12,7 +12,8 @@ const savingsSchema = new mongoose.Schema({
   },
   totalCost:
   {
-    type: Number
+    totalcost: Number,
+    year: Number
   },
   realized:
   {
