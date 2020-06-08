@@ -106,6 +106,11 @@ function Settings() {
     const [baselineColumns, setBaselineColumns] = React.useState(
         [
             { title: 'Cost Type', field: 'costType' },
+            {
+                title: 'Sphere of Action',
+                field: 'sphereOfAction',
+                lookup: { '': '', 'infrastructure': 'Infrastructure', 'applications': 'Applications', 'partner': 'Partner', 'staff': 'Staff' },
+            },
             { title: '2020(€)', field: '2020', sorting: true },
             { title: '2021(€)', field: '2021' },
             { title: '2022(€)', field: '2022' },
@@ -116,6 +121,11 @@ function Settings() {
     const [savingsColumns, setSavingsColumns] = React.useState(
         [
             { title: 'Cost Type', field: 'costType' },
+            {
+                title: 'Sphere of Action',
+                field: 'sphereOfAction',
+                lookup: { '': '', 'infrastructure': 'Infrastructure', 'applications': 'Applications', 'partner': 'Partner', 'staff': 'Staff' },
+            },
             { title: '2020(€)', field: '2020', sorting: true },
             { title: '2021(€)', field: '2021' },
             { title: '2022(€)', field: '2022' },
@@ -124,6 +134,7 @@ function Settings() {
         ])
 
     const [rows, setRows] = React.useState([]);
+    const [savingsCostTypeRows, setSavingsCostTypeRows] = React.useState([]);
     const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
     const [isAdmin, setAdmin] = React.useState(false);
     const [customers, setCustomers] = React.useState('');
@@ -274,35 +285,86 @@ function Settings() {
                 // setRows(data);
             })
             .catch(error => console.log(error));
-        fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId'), {
+        fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=baseline', {
             method: 'GET',
             headers: { 'x-access-token': localStorage.getItem('token') || '' }
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
+
 
                 // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
                 // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
                 // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
-                var costTypes = {}
+                // var costTypes = {}
                 var costTypeData = []
                 for (var i = 0; i < data.length; i++) {
-                    if (costTypes[data[i].costType]) {
-                        costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
+                    var costType = {}
+                    for (var j = 0; j < data[i].costTypeYear.length; j++) {
+                        costType[data[i].costTypeYear[j]['year']] = data[i].costTypeYear[j]['amount']
                     }
-                    else {
-                        costTypes[data[i].costType] = {}
-                        costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
-                    }
+                    costType.costType = data[i].costType
+                    costType.sphereOfAction = data[i].sphereOfAction
+                    costTypeData.push(costType)
                 }
-                console.log(costTypes)
-                for (var i in costTypes) {
-                    costTypes[i]['costType'] = i
-                    costTypeData.push(costTypes[i])
-                }
-                console.log(costTypeData)
+                // if (costTypes[data[i].costType]) {
+                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
+                // }
+                // else {
+                //     costTypes[data[i].costType] = {}
+                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
+                // }
+                //}
+
+                // for (var i in costTypes) {
+                //     costTypes[i]['costType'] = i
+                //     costTypeData.push(costTypes[i])
+                // }
+                // console.log(costTypeData)
                 setRows(costTypeData);
+                // console.log(data)
+                // setRows(data);
+            })
+            .catch(error => console.log(error));
+
+        fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=savings', {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+
+
+                // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
+                // var costTypes = {}
+                var costTypeData = []
+                for (var i = 0; i < data.length; i++) {
+                    var costType = {}
+                    for (var j = 0; j < data[i].costTypeYear.length; j++) {
+                        costType[data[i].costTypeYear[j]['year']] = data[i].costTypeYear[j]['amount']
+                    }
+                    costType.costType = data[i].costType
+                    costType.sphereOfAction = data[i].sphereOfAction
+                    costTypeData.push(costType)
+                }
+
+                // if (costTypes[data[i].costType]) {
+                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
+                // }
+                // else {
+                //     costTypes[data[i].costType] = {}
+                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
+                // }
+                //}
+
+                // for (var i in costTypes) {
+                //     costTypes[i]['costType'] = i
+                //     costTypeData.push(costTypes[i])
+                // }
+                // console.log(costTypeData)
+                setSavingsCostTypeRows(costTypeData);
                 // console.log(data)
                 // setRows(data);
             })
@@ -531,6 +593,10 @@ function Settings() {
                     <Typography style={{ marginLeft: "20px" }}>
                         <h2> Targets & Baseline </h2>
                     </Typography>
+
+                    <Typography style={{ marginLeft: "20px" }}>
+                        <h2> Cost Baseline</h2>
+                    </Typography>
                     <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineTotalCostRows}>
                         +  Add Columns
       </Button>
@@ -587,26 +653,45 @@ function Settings() {
                                     // }
                                     // else {
                                     setTimeout(() => {
-                                        //newData.customerId = localStorage.getItem('customerId') + ''
+                                        console.log(newData)
+                                        var costTypeYearAmount = {}
+                                        var costTypeYearAmountData = []
+                                        var costTypePayload = {}
+                                        costTypePayload.customerId = localStorage.getItem('customerId') + ''
+                                        costTypePayload.costTypeGroup = 'printingforexecutives'
+                                        costTypePayload.costType = newData.costType
+                                        costTypePayload.type = 'baseline'
+                                        costTypePayload.sphereOfAction = newData.sphereOfAction
+                                        delete (newData.costType)
+                                        delete (newData.sphereOfAction)
+                                        for (var i in newData) {
+                                            costTypeYearAmount = {}
+                                            costTypeYearAmount['year'] = parseInt(i)
+                                            costTypeYearAmount['amount'] = parseInt(newData[i])
+                                            costTypeYearAmountData.push(costTypeYearAmount)
+                                        }
+                                        costTypePayload.costTypeYear = costTypeYearAmountData
+                                        //console.log(costTypePayload)
                                         resolve();
                                         axios
-                                            .post("http://localhost:4000/costtype/", {
-                                                "customer": "SBI",
-                                                "costTypeGroup": "printingforexecutives",
-                                                "costType": "new",
-                                                "costTypeYear": "2020",
-                                                "amount": "5000",
-                                                "description": "costs incurred for printing"
-                                            }, {
-                                                    headers: { 'x-access-token': localStorage.getItem('token') }
-                                                })
+                                            .post("http://localhost:4000/costtype/", costTypePayload, {
+                                                headers: { 'x-access-token': localStorage.getItem('token') }
+                                            })
+                                            //{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }
                                             .then((response) => {
                                                 setRows(prevState => {
                                                     const data = [...prevState];
-                                                    data.push({
-                                                        2020: 5000,
-                                                        costType: "new"
-                                                    });
+                                                    var costType = {}
+
+
+                                                    for (var j = 0; j < response.data.costTypeYear.length; j++) {
+                                                        costType[response.data.costTypeYear[j]['year']] = response.data.costTypeYear[j]['amount']
+                                                    }
+                                                    costType.costType = response.data.costType
+                                                    costType.sphereOfAction = response.data.sphereOfAction
+
+                                                    // console.log(response.data)
+                                                    data.push(costType);
                                                     return data;
                                                 })
                                             })
@@ -618,25 +703,38 @@ function Settings() {
                                 }),
                             onRowUpdate: (newData, oldData) =>
                                 new Promise(resolve => {
-                                    var costType
-                                    setTimeout(() => {
 
+                                    setTimeout(() => {
+                                        var costTypeYearAmount = {}
+                                        var costTypeYearAmountData = []
+
+
+                                        var newCostTypeData = JSON.parse(JSON.stringify(newData))
+                                        var payload = {}
+                                        payload.costType = newCostTypeData.costType
+                                        delete (newCostTypeData.customerId)
+                                        delete (newCostTypeData.costType)
+                                        delete (newCostTypeData.sphereOfAction)
+                                        for (var i in newCostTypeData) {
+                                            costTypeYearAmount = {}
+                                            costTypeYearAmount['year'] = parseInt(i)
+                                            costTypeYearAmount['amount'] = parseInt(newCostTypeData[i])
+                                            costTypeYearAmountData.push(costTypeYearAmount)
+                                        }
+                                        payload.costTypeYear = costTypeYearAmountData
+                                        payload.sphereOfAction = newData.sphereOfAction
                                         // newData.customerId = localStorage.getItem('customerId') + ''
                                         resolve();
                                         axios
-                                            .put("http://localhost:4000/measures/" + localStorage.getItem('customerId') + '/' + '2020' / newData.costType, {
-                                                "customer": "SBI",
-                                                "costTypeGroup": "printingforexecutives",
-                                                "costType": "Printing",
-                                                "costTypeYear": "2020",
-                                                "amount": "50",
-                                                "description": "costs incurred for printing"
-                                            }, {
-                                                    headers: { 'x-access-token': localStorage.getItem('token') }
-                                                })
+                                            .put('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=baseline', payload, {
+                                                headers: { 'x-access-token': localStorage.getItem('token') }
+                                            })
                                             .then((response) => {
                                                 setRows(prevState => {
                                                     const data = [...prevState];
+                                                    console.log('data' + data)
+                                                    console.log(newData)
+
                                                     data[data.indexOf(oldData)] = newData;
                                                     return data;
                                                 })
@@ -651,8 +749,9 @@ function Settings() {
                                 new Promise(resolve => {
                                     setTimeout(() => {
                                         resolve();
+                                        console.log(oldData)
                                         axios
-                                            .delete("http://localhost:4000/costtype/" + localStorage.getItem('customerId') + '/' + oldData.costType, {
+                                            .delete('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=baseline&costtype=' + oldData.costType, {
                                             })
                                             .then((response) => {
                                                 setRows(prevState => {
@@ -668,44 +767,24 @@ function Settings() {
                                 }),
                         }}
                     />
-                    <div style={{ width: '100%' }}>
-                        <Button style={{ marginLeft: "20px", marginTop: "20px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleSavingsColumns}>
-                            +  Add Columns
+
+                    {/* total cost here */}
+                    <Typography style={{ marginLeft: "20px" }}>
+                        <h2> Saving Targets</h2>
+                    </Typography>
+                    <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineTotalCostRows}>
+                        +  Add Columns
       </Button>
-                    </div>
                     <MaterialTable
                         icons={tableIcons}
-                        title="Savings Targets"
-                        columns={savingsColumns}
-                        data={rows}
+                        title="Total IT Cost"
+                        columns={baselineTotalCostColumns}
+                        options={{
+                            paging: false,
+                            search: false,
+                        }}
+                        data={baselineTotalCostRows}
                         editable={{
-                            onRowAdd: newData =>
-                                new Promise((resolve, reject) => {
-                                    if (Object.keys(newData).length < 8) {
-                                        setOpen(true);
-                                        reject()
-                                    }
-                                    else {
-                                        setTimeout(() => {
-                                            newData.customerId = localStorage.getItem('customerId') + ''
-                                            resolve();
-                                            axios
-                                                .post("http://localhost:4000/measures", newData, {
-                                                    headers: { 'x-access-token': localStorage.getItem('token') }
-                                                })
-                                                .then((response) => {
-                                                    setRows(prevState => {
-                                                        const data = [...prevState];
-                                                        data.push(response.data);
-                                                        return data;
-                                                    })
-                                                })
-                                                .catch(function (e) {
-                                                    console.log(e);
-                                                }, 600);
-                                        })
-                                    }
-                                }),
                             onRowUpdate: (newData, oldData) =>
                                 new Promise(resolve => {
                                     setTimeout(() => {
@@ -728,15 +807,136 @@ function Settings() {
                                     })
 
                                 }),
+
+                        }}
+                    />
+
+
+
+
+
+
+                    <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineColumns}>
+                        +  Add Columns
+      </Button>
+                    <MaterialTable
+                        icons={tableIcons}
+                        title="Saving Cost Types"
+                        columns={savingsColumns}
+                        data={savingsCostTypeRows}
+                        editable={{
+                            onRowAdd: newData =>
+                                new Promise((resolve, reject) => {
+                                    // if (Object.keys(newData).length < 8) {
+                                    //     setOpen(true);
+                                    //     reject()
+                                    // }
+                                    // else {
+                                    setTimeout(() => {
+                                        console.log(newData)
+                                        var costTypeYearAmount = {}
+                                        var costTypeYearAmountData = []
+                                        var costTypePayload = {}
+                                        costTypePayload.customerId = localStorage.getItem('customerId') + ''
+                                        costTypePayload.costTypeGroup = 'printingforexecutives'
+                                        costTypePayload.costType = newData.costType
+                                        costTypePayload.type = 'savings'
+                                        costTypePayload.sphereOfAction = newData.sphereOfAction
+                                        delete (newData.costType)
+                                        delete (newData.sphereOfAction)
+                                        console.log('spa- ' + newData.sphereOfAction)
+                                        for (var i in newData) {
+                                            costTypeYearAmount = {}
+                                            costTypeYearAmount['year'] = parseInt(i)
+                                            costTypeYearAmount['amount'] = parseInt(newData[i])
+                                            costTypeYearAmountData.push(costTypeYearAmount)
+                                        }
+                                        costTypePayload.costTypeYear = costTypeYearAmountData
+                                        //console.log(costTypePayload)
+                                        resolve();
+                                        axios
+                                            .post("http://localhost:4000/costtype/", costTypePayload, {
+                                                headers: { 'x-access-token': localStorage.getItem('token') }
+                                            })
+                                            //{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }
+                                            .then((response) => {
+                                                setSavingsCostTypeRows(prevState => {
+                                                    const data = [...prevState];
+                                                    var costType = {}
+
+
+                                                    for (var j = 0; j < response.data.costTypeYear.length; j++) {
+                                                        costType[response.data.costTypeYear[j]['year']] = response.data.costTypeYear[j]['amount']
+                                                    }
+                                                    costType.costType = response.data.costType
+                                                    costType.sphereOfAction = response.data.sphereOfAction
+
+                                                    // console.log(response.data)
+                                                    data.push(costType);
+                                                    return data;
+                                                })
+                                            })
+                                            .catch(function (e) {
+                                                console.log(e);
+                                            }, 600);
+                                    })
+                                    // }
+                                }),
+                            onRowUpdate: (newData, oldData) =>
+                                new Promise(resolve => {
+
+                                    setTimeout(() => {
+                                        var costTypeYearAmount = {}
+                                        var costTypeYearAmountData = []
+
+
+                                        var newCostTypeData = JSON.parse(JSON.stringify(newData))
+                                        var payload = {}
+                                        payload.costType = newCostTypeData.costType
+                                        delete (newCostTypeData.customerId)
+                                        delete (newCostTypeData.costType)
+                                        delete (newCostTypeData.sphereOfAction)
+                                        console.log(newCostTypeData)
+                                        for (var i in newCostTypeData) {
+                                            costTypeYearAmount = {}
+                                            costTypeYearAmount['year'] = parseInt(i)
+                                            costTypeYearAmount['amount'] = parseInt(newCostTypeData[i])
+                                            costTypeYearAmountData.push(costTypeYearAmount)
+                                        }
+                                        payload.costTypeYear = costTypeYearAmountData
+                                        payload.sphereOfAction = newData.sphereOfAction
+                                        // newData.customerId = localStorage.getItem('customerId') + ''
+                                        resolve();
+                                        axios
+                                            .put('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=savings', payload, {
+                                                headers: { 'x-access-token': localStorage.getItem('token') }
+                                            })
+                                            .then((response) => {
+                                                setSavingsCostTypeRows(prevState => {
+                                                    const data = [...prevState];
+                                                    console.log('data' + data)
+                                                    console.log(newData)
+
+                                                    data[data.indexOf(oldData)] = newData;
+                                                    return data;
+                                                })
+                                            })
+                                            .catch(function (e) {
+                                                console.log(e);
+                                            }, 600);
+                                    })
+
+                                }),
                             onRowDelete: oldData =>
                                 new Promise(resolve => {
                                     setTimeout(() => {
                                         resolve();
+                                        console.log(oldData)
                                         axios
-                                            .delete("http://localhost:4000/measures/" + oldData.measureId, {
+                                            .delete('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=savings&costtype=' + oldData.costType, {
                                             })
                                             .then((response) => {
-                                                setRows(prevState => {
+                                                setSavingsCostTypeRows(prevState => {
                                                     const data = [...prevState];
                                                     data.splice(data.indexOf(oldData), 1);
                                                     return data;

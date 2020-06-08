@@ -2,12 +2,10 @@ const mongoose = require('mongoose');
 
 const customerSchema = new mongoose.Schema({
   customer: {
-    type: String,
-    required: true
+    type: String
   },
   department: {
     type: String,
-    required: true
   },
   contact: {
     type: String,
