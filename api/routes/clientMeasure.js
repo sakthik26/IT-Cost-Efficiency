@@ -53,7 +53,59 @@ router.post('/', async (req, res) => {
     .catch(err => {
       res.json({ message: err });
     });
+
 });
+
+// Update clientmeasures based on measureid
+router.put('/:measureId', async (req, res) => {
+    var objForUpdate = {};
+    if (req.body.measure) objForUpdate.measure = req.body.measure;
+    if (req.body.currency) objForUpdate.currency = req.body.currency;
+    if (req.body.measureDescription) objForUpdate.measureDescription = req.body.measureDescription;
+    if (req.body.lever) objForUpdate.lever = req.body.lever;
+    if (req.body.area) objForUpdate.area = req.body.area;
+    if (req.body.currentHGValue) objForUpdate.currentHGValue = req.body.currentHGValue;
+    if (req.body.sustainable) objForUpdate.sustainable = req.body.sustainable;
+    if (req.body.validFrom) objForUpdate.validFrom = req.body.validFrom;
+    if (req.body.validTo) objForUpdate.validTo = req.body.validTo;
+    if (req.body.HD0) objForUpdate.HD0 = req.body.HD0;
+    if (req.body.HD1) objForUpdate.HD0 = req.body.HD1;
+    if (req.body.HD2) objForUpdate.HD0 = req.body.HD2;
+    if (req.body.HD3) objForUpdate.HD0 = req.body.HD3;
+    if (req.body.HD4) objForUpdate.HD0 = req.body.HD4;
+    if (req.body.HD5) objForUpdate.HD0 = req.body.HD5;
+    if (req.body.savingsPotential) objForUpdate.savingsPotential = req.body.savingsPotential;
+    if (req.body.overruns) objForUpdate.overruns = req.body.overruns;
+
+  
+    try {
+      const updatedClientMeasure = await ClientMeasure.findOneAndUpdate(
+        { measureId: req.params.measureId },
+        {
+          $set: objForUpdate
+        }
+      )
+  
+      await updatedClientMeasure.save();
+      res.json(updatedClientMeasure)
+  
+    } catch (err) {
+      res.json({ message: err });
+    }
+  });
+
+
+    // Delete clientMeasure based on measureId
+    router.delete('/:measureId', async (req, res) => {
+        try {
+            const removedClientMeasure = await ClientMeasure.remove({ measureId: req.params.measureId })
+            res.json(removedClientMeasure)
+          } catch (err) {
+            res.json({ message: err })
+          }
+        });
+        
+
 
 
 
