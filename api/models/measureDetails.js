@@ -1,17 +1,20 @@
 const mongoose = require('mongoose');
 
-const clientMeasureSchema = new mongoose.Schema({
-  measureId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'measure'
-  },
+const measureDetailsSchema = new mongoose.Schema({
   measure: {
+    type: String
+  },
+  customerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'customer'
+  },
+  customer: {
     type: String
   },
   currency: {
     type: String
   },
-  measureDescription: {
+  description: {
     type: String
   },
   lever: {
@@ -71,4 +74,4 @@ const clientMeasureSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('ClientMeasures', clientMeasureSchema);
+module.exports = mongoose.model('MeasureDetails', measureDetailsSchema);

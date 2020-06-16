@@ -72,9 +72,9 @@ app.use("/costtypegroup", costTypeGroupRouter);
 const savingsRouter = require('./routes/savings');
 app.use("/savings", savingsRouter);
 
-//ClientMeasures Router
-const clientMeasureRouter = require('./routes/clientMeasure');
-app.use("/clientmeasure", clientMeasureRouter);
+//MeasureDetails Router
+const measureDetailsRouter = require('./routes/measureDetails');
+app.use("/measuredetails", measureDetailsRouter);
 
 
 

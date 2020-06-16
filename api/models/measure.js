@@ -2,40 +2,32 @@ const mongoose = require('mongoose');
 const Customer = require('./customer');
 const measureSchema = new mongoose.Schema({
   measureId: {
-    type: String,
-    required: true
+    type: mongoose.Schema.Types.ObjectId
   },
   customerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
   externalMeasureId: {
-    type: String,
-    required: true
+    type: String
   },
   measure: {
-    type: String,
-    required: true
+    type: String
   },
   description: {
-    type: String,
-    required: true
+    type: String
   },
   potential: {
-    type: String,
-    required: true
+    type: String
   },
   durationInMonth: {
-    type: String,
-    required: true
+    type: String
   },
   status: {
-    type: String,
-    required: true
+    type: String
   },
   statusLang: {
-    type: String,
-    required: true
+    type: String
   }
 
 });

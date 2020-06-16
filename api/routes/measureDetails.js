@@ -1,16 +1,16 @@
 
 const express = require('express');
 const router = express.Router();
-const ClientMeasure = require("../models/clientMeasure");
+const MeasureDetails = require("../models/measureDetails");
 const Measures = require("../models/measure");
-
+const Customer = require("../models/customer");
 
 
 // Gets all the client measures
 router.get('/', async (req, res) => {
   try {
-    const clientMeasures = await ClientMeasure.find()
-    res.json(clientMeasures)
+    const measuredetails = await MeasureDetails.find()
+    res.json(measuredetails)
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
@@ -19,10 +19,11 @@ router.get('/', async (req, res) => {
 
 // Creates new client measures in the database
 router.post('/', async (req, res) => {
-  const postClientMeasures = new ClientMeasure({
+  const postmeasuredetails = new MeasureDetails({
     measure: req.body.measure,
+    customer: req.body.customer,
     currency: req.body.currency,
-    measureDescription: req.body.measureDescription,
+    description: req.body.description,
     lever: req.body.lever,
     area: req.body.area,
     currentHGValue: req.body.currentHGValue,
@@ -40,13 +41,26 @@ router.post('/', async (req, res) => {
   });
 
 
-  //compare measure name from measures and clientMeasures collections and assign corresponding measureId
-  const measures = await Measures.findOne({ measure: req.body.measure });
-    if (postClientMeasures.measure == measures.measure) {
-        postClientMeasures.measureId = measures._id;
-    }
+  //compare measure name from measures and measureDetails collections and assign corresponding measureId
+  //const measures = await Measures.findOne({ measure: req.body.measure });
+    //if (postmeasuredetails.measure == measures.measure) {
+     //   postmeasuredetails.measureId = measures._id;
+    //}
 
-  postClientMeasures.save()
+  //compare customer name from customers and measureDetails collections and assign corresponding customerId
+  const customers = await Customer.findOne({ customer: req.body.customer });
+  if (postmeasuredetails.customer == customers.customer) {
+      postmeasuredetails.customerId = customers._id;
+  }
+
+  const postmeasure = new Measures({
+    measureId: postmeasuredetails._id,
+    measure: postmeasuredetails.measure,
+    description: postmeasuredetails.description,
+    customerId: postmeasuredetails.customerId
+  });
+  
+  postmeasuredetails.save()
     .then(data => {
       res.json(data);
     })
@@ -54,9 +68,18 @@ router.post('/', async (req, res) => {
       res.json({ message: err });
     });
 
+    postmeasure.save()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      res.json({ message: err });
+    });
+
+
 });
 
-// Update clientmeasures based on measureid
+// Update measure details based on measureid
 router.put('/:measureId', async (req, res) => {
     var objForUpdate = {};
     if (req.body.measure) objForUpdate.measure = req.body.measure;
@@ -79,15 +102,15 @@ router.put('/:measureId', async (req, res) => {
 
   
     try {
-      const updatedClientMeasure = await ClientMeasure.findOneAndUpdate(
+      const updatedMeasureDetail = await MeasureDetails.findOneAndUpdate(
         { measureId: req.params.measureId },
         {
           $set: objForUpdate
         }
       )
   
-      await updatedClientMeasure.save();
-      res.json(updatedClientMeasure)
+      await updatedMeasureDetail.save();
+      res.json(updatedMeasureDetail)
   
     } catch (err) {
       res.json({ message: err });
@@ -96,13 +119,24 @@ router.put('/:measureId', async (req, res) => {
 
 
     // Delete clientMeasure based on measureId
-    router.delete('/:measureId', async (req, res) => {
+    router.delete('/:_id', async (req, res) => {
         try {
-            const removedClientMeasure = await ClientMeasure.remove({ measureId: req.params.measureId })
-            res.json(removedClientMeasure)
+            const removedMeasureDetail = await MeasureDetails.remove({ _id: req.params._id })
+            const removedMeasure = await Measures.remove({ measureId: req.params.measureId })
+            console.log("outside")
+            if(removedMeasureDetail._id == removedMeasure.measureId)
+            {
+            console.log("comes in")
+            res.json(removedMeasure)
+            }
+
+            res.json(removedMeasureDetail)
+           
           } catch (err) {
             res.json({ message: err })
           }
+         
+
         });
         
 
