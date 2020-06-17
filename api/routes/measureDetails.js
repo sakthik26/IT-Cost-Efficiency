@@ -122,24 +122,17 @@ router.put('/:measureId', async (req, res) => {
     router.delete('/:_id', async (req, res) => {
         try {
             const removedMeasureDetail = await MeasureDetails.remove({ _id: req.params._id })
-            const removedMeasure = await Measures.remove({ measureId: req.params.measureId })
-            console.log("outside")
-            if(removedMeasureDetail._id == removedMeasure.measureId)
-            {
-            console.log("comes in")
-            res.json(removedMeasure)
-            }
+            console.log(removedMeasureDetail)
 
+            const removedMeasure = await Measures.remove({ measureId: req.params._id })
+            
             res.json(removedMeasureDetail)
            
           } catch (err) {
             res.json({ message: err })
           }
-         
-
         });
         
-
 
 
 
