@@ -36,6 +36,7 @@ router.post('/', async (req, res) => {
     HD3: req.body.HD3,
     HD4: req.body.HD4,
     HD5: req.body.HD5,
+    additionalCharges: req.body.additionalCharges,
     savingsPotential: req.body.savingsPotential,
     overruns: req.body.overruns
   });
@@ -57,7 +58,8 @@ router.post('/', async (req, res) => {
     measureId: postmeasuredetails._id,
     measure: postmeasuredetails.measure,
     description: postmeasuredetails.description,
-    customerId: postmeasuredetails.customerId
+    customerId: postmeasuredetails.customerId,
+    customer: postmeasuredetails.customer
   });
   
   postmeasuredetails.save()
@@ -70,7 +72,7 @@ router.post('/', async (req, res) => {
 
     postmeasure.save()
     .then(data => {
-      res.json(data);
+    
     })
     .catch(err => {
       res.json({ message: err });
@@ -80,11 +82,11 @@ router.post('/', async (req, res) => {
 });
 
 // Update measure details based on measureid
-router.put('/:measureId', async (req, res) => {
+router.put('/:_id', async (req, res) => {
     var objForUpdate = {};
     if (req.body.measure) objForUpdate.measure = req.body.measure;
     if (req.body.currency) objForUpdate.currency = req.body.currency;
-    if (req.body.measureDescription) objForUpdate.measureDescription = req.body.measureDescription;
+    if (req.body.description) objForUpdate.description = req.body.description;
     if (req.body.lever) objForUpdate.lever = req.body.lever;
     if (req.body.area) objForUpdate.area = req.body.area;
     if (req.body.currentHGValue) objForUpdate.currentHGValue = req.body.currentHGValue;
@@ -97,19 +99,28 @@ router.put('/:measureId', async (req, res) => {
     if (req.body.HD3) objForUpdate.HD0 = req.body.HD3;
     if (req.body.HD4) objForUpdate.HD0 = req.body.HD4;
     if (req.body.HD5) objForUpdate.HD0 = req.body.HD5;
+    if (req.body.additionalCharges) objForUpdate.additionalCharges = req.body.additionalCharges;
     if (req.body.savingsPotential) objForUpdate.savingsPotential = req.body.savingsPotential;
     if (req.body.overruns) objForUpdate.overruns = req.body.overruns;
 
   
     try {
       const updatedMeasureDetail = await MeasureDetails.findOneAndUpdate(
-        { measureId: req.params.measureId },
+        { _id: req.params._id },
         {
           $set: objForUpdate
         }
       )
-  
+
+      const updatedMeasure = await Measures.findOneAndUpdate(
+        { measureId: req.params._id },
+        {
+          $set: objForUpdate
+        }
+      )
+      
       await updatedMeasureDetail.save();
+      await updatedMeasure.save();
       res.json(updatedMeasureDetail)
   
     } catch (err) {

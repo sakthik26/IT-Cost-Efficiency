@@ -53,6 +53,9 @@ const measureDetailsSchema = new mongoose.Schema({
   HD5: {
     type: Date
   },
+  additionalCharges: {
+    type: String
+  },
   savingsPotential: [{
     HD0: Number,
     HD1: Number,

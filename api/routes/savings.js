@@ -19,7 +19,7 @@ router.post('/', async (req, res) => {
 
     const savings = new Savings({
         measure: req.body.measure,
-        totaCost: req.body.totaCost,
+        totalCost: req.body.totalCost,
         realized: req.body.realized,
         savingPerYear: req.body.savingPerYear,
         impactDate: req.body.impactDate,

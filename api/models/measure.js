@@ -8,8 +8,12 @@ const measureSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Customer'
   },
-  externalMeasureId: {
+  customer: {
     type: String
+  },
+  externalMeasureId: {
+    type: String,
+    default: '100'
   },
   measure: {
     type: String
@@ -18,16 +22,20 @@ const measureSchema = new mongoose.Schema({
     type: String
   },
   potential: {
-    type: String
+    type: String,
+    default: 'Good'
   },
   durationInMonth: {
-    type: String
+    type: String,
+    default: '5'
   },
   status: {
-    type: String
+    type: String,
+    default: 'Active'
   },
   statusLang: {
-    type: String
+    type: String,
+    default: 'five months'
   }
 
 });
