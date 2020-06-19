@@ -1,4 +1,8 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom'
+import { withRouter } from 'react-router';
+
+import axios from 'axios';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
@@ -11,7 +15,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import Divider from '@material-ui/core/Divider';
-import PropTypes from 'prop-types';
+import PropTypes, { element } from 'prop-types';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Box from '@material-ui/core/Box';
@@ -20,6 +24,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import { useEffect } from 'react';
 import logo from '../assets/logo.jpg'
 import DateFnsUtils from '@date-io/date-fns';
 import {
@@ -82,8 +87,28 @@ function a11yProps(index) {
     };
 }
 
-export default function MeasureDetails() {
+export default function MeasureDetails(props) {
+    const history = useHistory();
     const classes = useStyles();
+    const [measureName, setMeasureName] = React.useState('');
+    const [additionalCharges, setAdditionalCharges] = React.useState('');
+
+    const [savingsHD0, setSavingsHD0] = React.useState(0);
+    const [savingsHD1, setSavingsHD1] = React.useState(0);
+    const [savingsHD2, setSavingsHD2] = React.useState(0);
+    const [savingsHD3, setSavingsHD3] = React.useState(0);
+    const [savingsHD4, setSavingsHD4] = React.useState(0);
+    const [savingsHD5, setSavingsHD5] = React.useState(0);
+
+
+    const [overrunsHD0, setOverrunsHD0] = React.useState(0);
+    const [overrunsHD1, setOverrunsHD1] = React.useState(0);
+    const [overrunsHD2, setOverrunsHD2] = React.useState(0);
+    const [overrunsHD3, setOverrunsHD3] = React.useState(0);
+    const [overrunsHD4, setOverrunsHD4] = React.useState(0);
+    const [overrunsHD5, setOverrunsHD5] = React.useState(0);
+
+    const [measureDescription, setMeasureDescription] = React.useState('');
     const [currency, setCurrency] = React.useState('Euros');
     const currencies = ['Euros', 'US Dollars', 'Singapore Dollars', 'Yen']
     const handleCurrencyChange = (event) => {
@@ -108,10 +133,13 @@ export default function MeasureDetails() {
         setArea(event.target.value);
     };
 
-    const [isSustainable, setSustainability] = React.useState('Yes');
-    const sustainabilityValues = ['Yes', 'No']
+    const [isSustainable, setSustainability] = React.useState(true);
+    const sustainabilityValues = ["true", "false"]
     const handleSustainabilityChange = (event) => {
-        setSustainability(event.target.value);
+        if (event.target.value == "true")
+            setSustainability(true);
+        else
+            setSustainability(false)
     };
 
 
@@ -168,6 +196,157 @@ export default function MeasureDetails() {
     const handleHd5 = (date) => {
         setHd5(date);
     };
+    useEffect(() => {
+        if (props.match.params && props.match.params.id) {
+
+            var id = props.match.params.id
+
+            async function fetchData() {
+                const res = await fetch("http://localhost:4000/measuredetails/" + id);
+                res
+                    .json()
+                    .then(response => {
+                        var measureDetail = response[0]
+                        setMeasureName(measureDetail.measure)
+                        setMeasureDescription(measureDetail.description)
+                        setCurrency(measureDetail.currency)
+                        setLever(measureDetail.lever)
+                        setArea(measureDetail.area)
+                        setHdValue(measureDetail.currentHGValue)
+                        setSustainability(measureDetail.sustainable)
+                        setValidFrom(measureDetail.validFrom)
+                        setValidTo(measureDetail.validTo)
+                        setHd0(measureDetail.HD0)
+                        setHd1(measureDetail.HD1)
+                        setHd2(measureDetail.HD2)
+                        setHd3(measureDetail.HD3)
+                        setHd4(measureDetail.HD4)
+                        setHd5(measureDetail.HD5)
+                        setSavingsHD0(measureDetail.savingsPotential[0]["HD0"])
+                        setSavingsHD1(measureDetail.savingsPotential[0]["HD1"])
+                        setSavingsHD2(measureDetail.savingsPotential[0]["HD2"])
+                        setSavingsHD3(measureDetail.savingsPotential[0]["HD3"])
+                        setSavingsHD4(measureDetail.savingsPotential[0]["HD4"])
+                        setSavingsHD5(measureDetail.savingsPotential[0]["HD5"])
+                        setOverrunsHD0(measureDetail.overruns[0]["HD0"])
+                        setOverrunsHD1(measureDetail.overruns[0]["HD1"])
+                        setOverrunsHD2(measureDetail.overruns[0]["HD2"])
+                        setOverrunsHD3(measureDetail.overruns[0]["HD3"])
+                        setOverrunsHD4(measureDetail.overruns[0]["HD4"])
+                        setOverrunsHD5(measureDetail.overruns[0]["HD5"])
+                    })
+                    .catch(function (e) {
+                        console.log(e);
+                    });
+            }
+
+            fetchData();
+
+        }
+    }, props)
+
+
+    const handleMeasureDetailUpdate = (id) => {
+
+        var payload = {
+            measure: measureName,
+            description: measureDescription,
+            currency: currency,
+            lever: lever,
+            area: area,
+            currentHGValue: hdValue,
+            sustainable: isSustainable,
+            validFrom: new Date(validFrom).getFullYear() + "-" + new Date(validFrom).getMonth() + "-" + new Date(validFrom).getDate(),
+            validTo: new Date(validTo).getFullYear() + "-" + new Date(validTo).getMonth() + "-" + new Date(validTo).getDate(),
+            HD0: new Date(hd0).getFullYear() + "-" + new Date(hd0).getMonth() + "-" + new Date(hd0).getDate(),
+            HD1: new Date(hd1).getFullYear() + "-" + new Date(hd1).getMonth() + "-" + new Date(hd1).getDate(),
+            HD2: new Date(hd2).getFullYear() + "-" + new Date(hd2).getMonth() + "-" + new Date(hd2).getDate(),
+            HD3: new Date(hd3).getFullYear() + "-" + new Date(hd3).getMonth() + "-" + new Date(hd3).getDate(),
+            HD4: new Date(hd4).getFullYear() + "-" + new Date(hd4).getMonth() + "-" + new Date(hd4).getDate(),
+            HD5: new Date(hd5).getFullYear() + "-" + new Date(hd5).getMonth() + "-" + new Date(hd5).getDate(),
+            additionalCharges: additionalCharges,
+            savingsPotential: [
+                {
+                    HD0: savingsHD0,
+                    HD1: savingsHD1,
+                    HD2: savingsHD2,
+                    HD3: savingsHD3,
+                    HD4: savingsHD4,
+                    HD5: savingsHD5,
+                }
+            ],
+            overruns: [
+                {
+                    HD0: overrunsHD0,
+                    HD1: overrunsHD1,
+                    HD2: overrunsHD2,
+                    HD3: overrunsHD3,
+                    HD4: overrunsHD4,
+                    HD5: overrunsHD5,
+                }
+            ]
+        }
+        axios
+            .put("http://localhost:4000/measuredetails/" + id, payload, {
+            })
+            .then((response) => {
+                history.push('/measures')
+            })
+            .catch(function (e) {
+                console.log(e);
+            });
+    }
+
+    const handleMeasureDetailSave = (event) => {
+
+        var payload = {
+            measure: measureName,
+            description: measureDescription,
+            currency: currency,
+            lever: lever,
+            area: area,
+            currentHGValue: hdValue,
+            sustainable: isSustainable,
+            validFrom: validFrom.getFullYear() + "-" + validFrom.getMonth() + "-" + validFrom.getDate(),
+            validTo: validTo.getFullYear() + "-" + validTo.getMonth() + "-" + validTo.getDate(),
+            HD0: hd0.getFullYear() + "-" + hd0.getMonth() + "-" + hd0.getDate(),
+            HD1: hd1.getFullYear() + "-" + hd1.getMonth() + "-" + hd1.getDate(),
+            HD2: hd2.getFullYear() + "-" + hd2.getMonth() + "-" + hd2.getDate(),
+            HD3: hd3.getFullYear() + "-" + hd3.getMonth() + "-" + hd3.getDate(),
+            HD4: hd4.getFullYear() + "-" + hd4.getMonth() + "-" + hd4.getDate(),
+            HD5: hd5.getFullYear() + "-" + hd5.getMonth() + "-" + hd5.getDate(),
+            additionalCharges: additionalCharges,
+            savingsPotential: [
+                {
+                    HD0: savingsHD0,
+                    HD1: savingsHD1,
+                    HD2: savingsHD2,
+                    HD3: savingsHD3,
+                    HD4: savingsHD4,
+                    HD5: savingsHD5,
+                }
+            ],
+            overruns: [
+                {
+                    HD0: overrunsHD0,
+                    HD1: overrunsHD1,
+                    HD2: overrunsHD2,
+                    HD3: overrunsHD3,
+                    HD4: overrunsHD4,
+                    HD5: overrunsHD5,
+                }
+            ]
+        }
+        axios
+            .post("http://localhost:4000/measuredetails?customer=" + localStorage.getItem('customerId'), payload, {
+            })
+            .then((response) => {
+                history.push('/measures')
+            })
+            .catch(function (e) {
+                console.log(e);
+            });
+    }
 
     const logOut = (event, reason) => {
         localStorage.removeItem('token')
@@ -177,6 +356,7 @@ export default function MeasureDetails() {
     };
     return (
         <div className={classes.root}>
+
             <AppBar position="static">
                 <Toolbar>
                     <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
@@ -196,7 +376,8 @@ export default function MeasureDetails() {
                 paddingLeft: '10px'
             }}>
                 Measures: SBI
-        </Typography>
+
+            </Typography>
 
             <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
                 <Tab label="New Measure" {...a11yProps(0)} />
@@ -216,6 +397,8 @@ export default function MeasureDetails() {
                             <TextField
                                 required
                                 id="measureName"
+                                value={measureName}
+                                onChange={e => setMeasureName(e.target.value)}
                                 name="measureName"
                                 label="Measure Name"
                                 fullWidth
@@ -242,7 +425,9 @@ export default function MeasureDetails() {
                             <TextField
                                 required
                                 name="measureDescription"
+                                value={measureDescription}
                                 label="Measure Description"
+                                onChange={e => setMeasureDescription(e.target.value)}
                                 fullWidth
                                 autoComplete="Measure Description"
                             />
@@ -444,9 +629,10 @@ export default function MeasureDetails() {
                         <Grid item xs={12}>
                             <TextField
                                 required
-
+                                value={additionalCharges}
                                 label="Overruns or Additional Charges"
                                 fullWidth
+                                onChange={e => setAdditionalCharges(e.target.value)}
                                 autoComplete="Overruns or Additional Charges"
                             />
                         </Grid>
@@ -454,8 +640,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
-                                label="HD0"
+                                onChange={e => setSavingsHD0(parseInt(e.target.value))}
+                                label="HD0" value={savingsHD0}
                                 fullWidth
                                 autoComplete="HD0"
                             />
@@ -463,7 +649,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                value={savingsHD1}
+                                onChange={e => setSavingsHD1(parseInt(e.target.value))}
                                 label="HD1"
                                 fullWidth
                                 autoComplete="HD1"
@@ -472,16 +659,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
-                                label="HD1"
-                                fullWidth
-                                autoComplete="HD1"
-                            />
-                        </Grid>
-                        <Grid item xs={6} sm={6}>
-                            <TextField
-                                required
-
+                                value={savingsHD2}
+                                onChange={e => setSavingsHD2(parseInt(e.target.value))}
                                 label="HD2"
                                 fullWidth
                                 autoComplete="HD2"
@@ -490,7 +669,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                value={savingsHD3}
+                                onChange={e => setSavingsHD3(parseInt(e.target.value))}
                                 label="HD3"
                                 fullWidth
                                 autoComplete="HD3"
@@ -499,7 +679,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                value={savingsHD4}
+                                onChange={e => setSavingsHD4(parseInt(e.target.value))}
                                 label="HD4"
                                 fullWidth
                                 autoComplete="HD4"
@@ -508,7 +689,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                onChange={e => setSavingsHD5(parseInt(e.target.value))}
+                                value={savingsHD5}
                                 label="HD5"
                                 fullWidth
                                 autoComplete="HD5"
@@ -523,17 +705,20 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                onChange={e => setOverrunsHD0(parseInt(e.target.value))}
                                 label="HD0"
+                                value={overrunsHD0}
                                 fullWidth
                                 autoComplete="HD0"
                             />
                         </Grid>
+
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                onChange={e => setOverrunsHD1(parseInt(e.target.value))}
                                 label="HD1"
+                                value={overrunsHD1}
                                 fullWidth
                                 autoComplete="HD1"
                             />
@@ -541,17 +726,9 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
-                                label="HD1"
-                                fullWidth
-                                autoComplete="HD1"
-                            />
-                        </Grid>
-                        <Grid item xs={6} sm={6}>
-                            <TextField
-                                required
-
+                                onChange={e => setOverrunsHD2(parseInt(e.target.value))}
                                 label="HD2"
+                                value={overrunsHD2}
                                 fullWidth
                                 autoComplete="HD2"
                             />
@@ -559,7 +736,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                value={overrunsHD3}
+                                onChange={e => setOverrunsHD3(parseInt(e.target.value))}
                                 label="HD3"
                                 fullWidth
                                 autoComplete="HD3"
@@ -568,7 +746,8 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                value={overrunsHD4}
+                                onChange={e => setOverrunsHD4(parseInt(e.target.value))}
                                 label="HD4"
                                 fullWidth
                                 autoComplete="HD4"
@@ -577,16 +756,22 @@ export default function MeasureDetails() {
                         <Grid item xs={6} sm={6}>
                             <TextField
                                 required
-
+                                value={overrunsHD5}
+                                onChange={e => setOverrunsHD5(parseInt(e.target.value))}
                                 label="HD5"
                                 fullWidth
                                 autoComplete="HD5"
                             />
                         </Grid>
                     </Grid>
-                    <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary">
-                        Save
-      </Button>
+                    {props.match && props.match.params && props.match.params.id ?
+                        <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary" onClick={() => { handleMeasureDetailUpdate(props.match.params.id) }}>
+                            Update
+     </Button> :
+                        <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary" onClick={handleMeasureDetailSave}>
+                            Save
+      </Button>}
+
 
 
 

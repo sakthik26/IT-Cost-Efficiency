@@ -18,6 +18,7 @@ const routing = (
         <Route exact path="/" component={SignUp} />
         <Route exact path="/signin" component={SignIn} />
         <Route exact path="/settings" component={Settings} />
+        <Route exact path="/measuredetails/:id" component={MeasureDetails} />
         <Route exact path="/measuredetails" component={MeasureDetails} />
         {/* <Route exact path="/admin" component={Admin} /> */}
       </div>
