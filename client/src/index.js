@@ -10,6 +10,7 @@ import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
 import Settings from './pages/Settings'
 import MeasureDetails from './pages/MeasureDetails'
+import Dashboard from './pages/Dashboard'
 const routing = (
   <Router>
     <Provider store={configureStore()}>
@@ -20,6 +21,7 @@ const routing = (
         <Route exact path="/settings" component={Settings} />
         <Route exact path="/measuredetails/:id" component={MeasureDetails} />
         <Route exact path="/measuredetails" component={MeasureDetails} />
+        <Route exact path="/dashboard" component={Dashboard} />
         {/* <Route exact path="/admin" component={Admin} /> */}
       </div>
     </Provider>

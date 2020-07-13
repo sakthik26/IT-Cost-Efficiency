@@ -26,6 +26,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { useEffect } from 'react';
 import logo from '../assets/logo.jpg'
+
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
@@ -92,6 +93,7 @@ export default function MeasureDetails(props) {
     const classes = useStyles();
     const [measureName, setMeasureName] = React.useState('');
     const [additionalCharges, setAdditionalCharges] = React.useState('');
+
 
     const [savingsHD0, setSavingsHD0] = React.useState(0);
     const [savingsHD1, setSavingsHD1] = React.useState(0);
@@ -764,6 +766,7 @@ export default function MeasureDetails(props) {
                             />
                         </Grid>
                     </Grid>
+
                     {props.match && props.match.params && props.match.params.id ?
                         <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary" onClick={() => { handleMeasureDetailUpdate(props.match.params.id) }}>
                             Update
