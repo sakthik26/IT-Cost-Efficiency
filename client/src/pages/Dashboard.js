@@ -45,6 +45,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
+import { checkServerIdentity } from 'tls';
 
 //simple dialog imports - end
 const tableIcons = {
@@ -92,41 +93,48 @@ const useStyles = makeStyles(theme => ({
         minWidth: 650,
     },
     chart: {
-        marginTop: 100
-    }
+        marginTop: 100,
+        width: '1000px !important',
+        height: '600px !important',
+    },
 }));
 
 function Settings() {
-    const state = {
+    const [initialChartState, setInitialChartState] = React.useState(true);
+    const [date, setDate] = React.useState({ key: Date.now() });
+
+
+    const [cState, setCState] = React.useState({
         labels: ["2020", "2021", "2022", "2023", "2024", "2025"],
         datasets: [{
             label: 'HD0',
             backgroundColor: "#caf270",
-            data: [12, 59, 5, 56, 58, 12],
+            data: []
         }, {
             label: 'HD1',
             backgroundColor: "#45c490",
-            data: [12, 59, 5, 56, 58, 12],
+            data: []
         }, {
             label: 'HD2',
             backgroundColor: "#008d93",
-            data: [12, 59, 5, 56, 58, 12],
+            data: []
         }, {
             label: 'HD3',
             backgroundColor: "#2e5468",
-            data: [12, 59, 5, 56, 58, 12],
+            data: []
         },
         {
             label: 'HD4',
             backgroundColor: "#a89d32",
-            data: [12, 59, 5, 56, 58, 12],
+            data: []
         },
         {
             label: 'HD5',
             backgroundColor: "#3789bd",
-            data: [12, 59, 5, 56, 58, 12],
-        }],
-    }
+            data: []
+        }]
+    })
+
     const [baselineTotalCostColumns, setBaselineTotalCostColumns] = React.useState(
         [
             { title: 'Overall', field: 'overall' },
@@ -284,136 +292,53 @@ function Settings() {
         // const result = await axios.get(
         //   'http://localhost:4000/measures',
         // );
-        if (!localStorage.getItem('id')) {
-            window.location.href = "/signin"
-            return
-        }
-        if (localStorage.getItem('emailId') && localStorage.getItem('emailId') === 'admin@gmail.com') {
-            setAdmin(true)
-        }
-        fetch('http://localhost:4000/baseline?customer=' + localStorage.getItem('customerId'), {
-            method: 'GET',
-            headers: { 'x-access-token': localStorage.getItem('token') || '' }
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
 
-                // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-                // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-                // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
-                var baselineRows = {}
-                var baselineData = []
-                for (var i = 0; i < data.length; i++) {
-
-                    baselineRows[data[i].year] = data[i].totalCost
-                }
-                console.log(baselineRows)
-
-                baselineData.push(baselineRows)
-
-                //console.log(costTypeData)
-                setBaselineTotalCostRows(baselineData);
-                // console.log(data)
-                // setRows(data);
-            })
-            .catch(error => console.log(error));
-        fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=baseline', {
-            method: 'GET',
-            headers: { 'x-access-token': localStorage.getItem('token') || '' }
-        })
-            .then(res => res.json())
-            .then(data => {
-
-
-                // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-                // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-                // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
-                // var costTypes = {}
-                var costTypeData = []
-                for (var i = 0; i < data.length; i++) {
-                    var costType = {}
-                    for (var j = 0; j < data[i].costTypeYear.length; j++) {
-                        costType[data[i].costTypeYear[j]['year']] = data[i].costTypeYear[j]['amount']
-                    }
-                    costType.costType = data[i].costType
-                    costType.sphereOfAction = data[i].sphereOfAction
-                    costTypeData.push(costType)
-                }
-                // if (costTypes[data[i].costType]) {
-                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
-                // }
-                // else {
-                //     costTypes[data[i].costType] = {}
-                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
-                // }
-                //}
-
-                // for (var i in costTypes) {
-                //     costTypes[i]['costType'] = i
-                //     costTypeData.push(costTypes[i])
-                // }
-                // console.log(costTypeData)
-                setRows(costTypeData);
-                // console.log(data)
-                // setRows(data);
-            })
-            .catch(error => console.log(error));
-
-        fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=savings', {
-            method: 'GET',
-            headers: { 'x-access-token': localStorage.getItem('token') || '' }
-        })
-            .then(res => res.json())
-            .then(data => {
-
-
-                // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-                // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
-                // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
-                // var costTypes = {}
-                var costTypeData = []
-                for (var i = 0; i < data.length; i++) {
-                    var costType = {}
-                    for (var j = 0; j < data[i].costTypeYear.length; j++) {
-                        costType[data[i].costTypeYear[j]['year']] = data[i].costTypeYear[j]['amount']
-                    }
-                    costType.costType = data[i].costType
-                    costType.sphereOfAction = data[i].sphereOfAction
-                    costTypeData.push(costType)
-                }
-
-                // if (costTypes[data[i].costType]) {
-                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
-                // }
-                // else {
-                //     costTypes[data[i].costType] = {}
-                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
-                // }
-                //}
-
-                // for (var i in costTypes) {
-                //     costTypes[i]['costType'] = i
-                //     costTypeData.push(costTypes[i])
-                // }
-                // console.log(costTypeData)
-                setSavingsCostTypeRows(costTypeData);
-                // console.log(data)
-                // setRows(data);
-            })
-            .catch(error => console.log(error));
 
 
         axios
-            .get("http://localhost:4000/customers", {
+            .get("http://localhost:4000/measuredetails" + '?customer=' + localStorage.getItem('customerId'), {
             })
             .then((response) => {
-                setCustomerOptions(response.data.map((customer) => customer.customer));
-                // var customers = {}
-                // for (var i = 0; i < response.data.length; i++) {
-                //   customers[response.data[i].customer] = []
+                console.log('Response here' + response.data)
+                var year = { '2020': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2021': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2022': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2023': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2024': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 } }
+                var hdLevel = ['HD0', 'HD1', 'HD2', 'HD3', 'HD4', 'HD5']
+                var savingsPotential = { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }
+                for (var i = 0; i < response.data.length; i++) {
+                    for (var k in year) {
+                        for (var m = 0; m < hdLevel.length; m++) {
+                            if (new Date(response.data[i][hdLevel[m]]).getFullYear() == k) {
+                                savingsPotential[hdLevel[m]] += response.data[i].savingsPotential[0][hdLevel[m]]
+
+                            }
+                        }
+                        for (var h = 0; h < hdLevel.length; h++) {
+                            year[k][hdLevel[h]] += savingsPotential[hdLevel[h]]
+                        }
+
+                        savingsPotential = { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }
+                    }
+
+                }
+                console.log(year)
+                var arr = []
+                // for (var y = 0; y < hdLevel.length; year++) {
+                //     for (var i in year) {
+                //         arr.push(year[i][hdLevel[y]])
+                //     }
                 // }
-                // setConsultantAccess(customers)
+                for (var j = 0; j < hdLevel.length; j++) {
+                    for (var i in year) {
+                        arr.push(year[i][hdLevel[j]])
+                    }
+                    cState.datasets[j].data = arr
+                    arr = []
+                }
+                console.log(arr)
+                // cState.datasets[0].data = [112, 0, 0, 0, 0]
+                // cState.datasets[1].data = [100, 0, 0, 0, 0]
+                setDate({ key: Date.now() })
+
+                setInitialChartState(false)
             })
             .catch(function (e) {
                 console.log(e);
@@ -606,8 +531,8 @@ function Settings() {
             </Snackbar>
             <div className={classes.chart}>
                 <Bar
-
-                    data={state}
+                    redraw
+                    data={cState}
                     options={{
                         tooltips: {
                             displayColors: true,
@@ -617,6 +542,7 @@ function Settings() {
                         },
                         scales: {
                             xAxes: [{
+                                barPercentage: 0.7,
                                 stacked: true,
                                 gridLines: {
                                     display: false,
@@ -631,7 +557,7 @@ function Settings() {
                             }]
                         },
                         responsive: true,
-
+                        maintainAspectRatio: false,
                         legend: { position: 'bottom' },
                     }}
                 />

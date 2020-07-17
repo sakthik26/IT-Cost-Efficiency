@@ -16,7 +16,16 @@ router.get('/:_id', async (req, res) => {
   }
 })
 
-
+// Gets all the client measures
+router.get('/', async (req, res) => {
+  let customerId = req.query.customer
+  try {
+    const measuredetails = await MeasureDetails.find({ customerId: customerId })
+    res.json(measuredetails)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
 
 
 // Creates new client measures in the database
@@ -53,11 +62,12 @@ router.post('/', async (req, res) => {
 
   //compare customer name from customers and measureDetails collections and assign corresponding customerId
   const customers = await Customer.findOne({ _id: objId });
-  if (postmeasuredetails.customer == customers.customer) {
-    postmeasuredetails.customerId = customers._id;
-  }
 
-  console.log('response here ----------' + postmeasuredetails)
+  postmeasuredetails.customerId = customers._id;
+
+
+  console.log('here' + postmeasuredetails)
+
 
 
   const postmeasure = new Measures({
@@ -67,7 +77,7 @@ router.post('/', async (req, res) => {
     customerId: objId,
     customer: customers.customer
   });
-  console.log('response here ----------' + postmeasure)
+
   postmeasuredetails.save()
     .then(data => {
       res.json(data);
@@ -75,7 +85,7 @@ router.post('/', async (req, res) => {
     .catch(err => {
       res.json({ message: err });
     });
-  console.log('saved ----------' + postmeasuredetails)
+
   postmeasure.save()
     .then(data => {
 
