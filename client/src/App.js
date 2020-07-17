@@ -1,5 +1,5 @@
 import React from 'react';
-import { withRouter } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -11,7 +11,9 @@ import { AddBox, ArrowDownward } from "@material-ui/icons";
 import MaterialTable from "material-table";
 import { forwardRef } from 'react';
 import { useEffect } from 'react';
+import EditIcon from '@material-ui/icons/Edit';
 import axios from 'axios';
+import { Icon } from '@material-ui/core';
 import Check from '@material-ui/icons/Check';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
@@ -94,6 +96,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function App() {
+  const history = useHistory();
   const [columns, setColumns] = React.useState(
     [
       { title: 'Measure ID', field: 'measureId', sorting: true },
@@ -440,67 +443,53 @@ function App() {
               )}
             </Select>
           </FormControl>
+          <Button style={{ marginLeft: "10px", marginTop: "10px", display: "block" }} variant="outlined" color="primary" onClick={() => { history.push('/measuredetails') }}>
+            Add Measures
+      </Button>
           <MaterialTable
             icons={tableIcons}
             title="Customer Measures"
             columns={columns}
+            actions={[
+              {
+                icon: EditIcon,
+                tooltip: 'Edit',
+                onClick: (event, rowData) => {
+                  history.push('/measuredetails/' + rowData.measureId)
+                }
+              }
+            ]}
             data={rows}
             editable={{
-              onRowAdd: newData =>
-                new Promise((resolve, reject) => {
-                  if (Object.keys(newData).length < 8) {
-                    setOpen(true);
-                    reject()
-                  }
-                  else {
-                    setTimeout(() => {
-                      newData.customerId = localStorage.getItem('customerId') + ''
-                      resolve();
-                      axios
-                        .post("http://localhost:4000/measures", newData, {
-                          headers: { 'x-access-token': localStorage.getItem('token') }
-                        })
-                        .then((response) => {
-                          setRows(prevState => {
-                            const data = [...prevState];
-                            data.push(response.data);
-                            return data;
-                          })
-                        })
-                        .catch(function (e) {
-                          console.log(e);
-                        }, 600);
-                    })
-                  }
-                }),
-              onRowUpdate: (newData, oldData) =>
-                new Promise(resolve => {
-                  setTimeout(() => {
-                    newData.customerId = localStorage.getItem('customerId') + ''
-                    resolve();
-                    axios
-                      .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
-                        headers: { 'x-access-token': localStorage.getItem('token') }
-                      })
-                      .then((response) => {
-                        setRows(prevState => {
-                          const data = [...prevState];
-                          data[data.indexOf(oldData)] = newData;
-                          return data;
-                        })
-                      })
-                      .catch(function (e) {
-                        console.log(e);
-                      }, 600);
-                  })
+              // onRowUpdate: (newData, oldData) =>
+              //   new Promise(resolve => {
+              //     history.push('/measuredetails/'+)
+              // setTimeout(() => {
+              //   newData.customerId = localStorage.getItem('customerId') + ''
+              //   resolve();
+              //   axios
+              //     .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+              //       headers: { 'x-access-token': localStorage.getItem('token') }
+              //     })
+              //     .then((response) => {
+              //       setRows(prevState => {
+              //         const data = [...prevState];
+              //         data[data.indexOf(oldData)] = newData;
+              //         return data;
+              //       })
+              //     })
+              //     .catch(function (e) {
+              //       console.log(e);
+              //     }, 600);
+              // })
 
-                }),
+              //}),
               onRowDelete: oldData =>
                 new Promise(resolve => {
                   setTimeout(() => {
                     resolve();
                     axios
-                      .delete("http://localhost:4000/measures/" + oldData.measureId, {
+                      .delete("http://localhost:4000/measuredetails/" + oldData.measureId, {
                       })
                       .then((response) => {
                         setRows(prevState => {
