@@ -1,6 +1,6 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -17,6 +17,7 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import Clear from '@material-ui/icons/Clear';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
+import Drawer from '@material-ui/core/Drawer';
 import Edit from '@material-ui/icons/Edit';
 import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
@@ -47,6 +48,34 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import { checkServerIdentity } from 'tls';
 
+//Landing Page
+
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import DashboardImage from '../assets/dashboard.png'
+import MeasuresImage from '../assets/focus.png'
+import ClientsImage from '../assets/team.png'
+import { Link } from 'react-router-dom'
+
+
+import CssBaseline from '@material-ui/core/CssBaseline';
+
+import List from '@material-ui/core/List';
+
+import Divider from '@material-ui/core/Divider';
+
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import InboxIcon from '@material-ui/icons/MoveToInbox';
+import MailIcon from '@material-ui/icons/Mail';
+
+const drawerWidth = 240;
 //simple dialog imports - end
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -72,6 +101,32 @@ const tableIcons = {
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
+        margin: '0 auto',
+    },
+    iconWidth: {
+        width: '200px',
+        margin: '0 auto'
+    },
+    iconWidthShort: {
+        width: '180px',
+        margin: '0 auto'
+    },
+    card: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        /* align-content: center; */
+        height: '100vh',
+        overflow: 'auto',
+    },
+    tiles: {
+        maxWidth: 345,
+    },
+    tilesShort: {
+        maxWidth: 200,
+    },
+    alignCenter: {
+        textAlign: 'center',
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -97,44 +152,55 @@ const useStyles = makeStyles(theme => ({
         width: '1000px !important',
         height: '600px !important',
     },
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    hide: {
+        display: 'none',
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: drawerWidth,
+    },
+    drawerHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(0, 1),
+        // necessary for content to be below app bar
+        ...theme.mixins.toolbar,
+        justifyContent: 'flex-end',
+    },
+    content: {
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: -drawerWidth,
+    },
+    contentShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+    },
 }));
 
 function Settings() {
-    const [initialChartState, setInitialChartState] = React.useState(true);
-    const [date, setDate] = React.useState({ key: Date.now() });
+    const [openDrawer, setOpenDrawer] = React.useState(false);
+    const theme = useTheme();
+    const handleDrawerOpen = () => {
+        setOpenDrawer(true);
+    };
 
-
-    const [cState, setCState] = React.useState({
-        labels: ["2020", "2021", "2022", "2023", "2024", "2025"],
-        datasets: [{
-            label: 'HD0',
-            backgroundColor: "#747474",
-            data: []
-        }, {
-            label: 'HD1',
-            backgroundColor: "#ba962b",
-            data: []
-        }, {
-            label: 'HD2',
-            backgroundColor: "#dfd937",
-            data: []
-        }, {
-            label: 'HD3',
-            backgroundColor: "#02bb71",
-            data: []
-        },
-        {
-            label: 'HD4',
-            backgroundColor: "#518a59",
-            data: []
-        },
-        {
-            label: 'HD5',
-            backgroundColor: "#178b15",
-            data: []
-        }]
-    })
-
+    const handleDrawerClose = () => {
+        setOpenDrawer(false);
+    };
     const [baselineTotalCostColumns, setBaselineTotalCostColumns] = React.useState(
         [
             { title: 'Overall', field: 'overall' },
@@ -292,57 +358,6 @@ function Settings() {
         // const result = await axios.get(
         //   'http://localhost:4000/measures',
         // );
-
-
-
-        axios
-            .get("http://localhost:4000/measuredetails" + '?customer=' + localStorage.getItem('customerId'), {
-            })
-            .then((response) => {
-                console.log('Response here' + response.data)
-                var year = { '2020': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2021': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2022': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2023': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }, '2024': { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 } }
-                var hdLevel = ['HD0', 'HD1', 'HD2', 'HD3', 'HD4', 'HD5']
-                var savingsPotential = { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }
-                for (var i = 0; i < response.data.length; i++) {
-                    for (var k in year) {
-                        for (var m = 0; m < hdLevel.length; m++) {
-                            if (new Date(response.data[i][hdLevel[m]]).getFullYear() == k) {
-                                savingsPotential[hdLevel[m]] += response.data[i].savingsPotential[0][hdLevel[m]]
-
-                            }
-                        }
-                        for (var h = 0; h < hdLevel.length; h++) {
-                            year[k][hdLevel[h]] += savingsPotential[hdLevel[h]]
-                        }
-
-                        savingsPotential = { 'HD0': 0, 'HD1': 0, 'HD2': 0, 'HD3': 0, 'HD4': 0, 'HD5': 0 }
-                    }
-
-                }
-                console.log(year)
-                var arr = []
-                // for (var y = 0; y < hdLevel.length; year++) {
-                //     for (var i in year) {
-                //         arr.push(year[i][hdLevel[y]])
-                //     }
-                // }
-                for (var j = 0; j < hdLevel.length; j++) {
-                    for (var i in year) {
-                        arr.push(year[i][hdLevel[j]])
-                    }
-                    cState.datasets[j].data = arr
-                    arr = []
-                }
-                console.log(arr)
-                // cState.datasets[0].data = [112, 0, 0, 0, 0]
-                // cState.datasets[1].data = [100, 0, 0, 0, 0]
-                setDate({ key: Date.now() })
-
-                setInitialChartState(false)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
 
         axios
             .get("http://localhost:4000/api/users ", {
@@ -524,43 +539,117 @@ function Settings() {
                 </Toolbar>
 
             </AppBar>
+            <Drawer
+                className={classes.drawer}
+                variant="persistent"
+                anchor="left"
+                open={open}
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+            >
+                <div className={classes.drawerHeader}>
+                    <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
+                </div>
+                <Divider />
+                <List>
+                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                </List>
+                <Divider />
+                <List>
+                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
+                        <ListItem button key={text}>
+                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Drawer>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error">
                     Please enter values for all the fields
         </Alert>
             </Snackbar>
-            <div className={classes.chart}>
-                <Bar
-                    redraw
-                    data={cState}
-                    options={{
-                        tooltips: {
-                            displayColors: true,
-                            callbacks: {
-                                mode: 'x',
-                            },
-                        },
-                        scales: {
-                            xAxes: [{
-                                barPercentage: 0.7,
-                                stacked: true,
-                                gridLines: {
-                                    display: false,
-                                }
-                            }],
-                            yAxes: [{
-                                stacked: true,
-                                ticks: {
-                                    beginAtZero: true,
-                                },
-                                type: 'linear',
-                            }]
-                        },
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        legend: { position: 'bottom' },
-                    }}
-                />
+            <div className={classes.card}>
+                {/* <Card className={classes.tiles}>
+                    <CardActionArea>
+                        <CardMedia
+                            component="img"
+                            className={classes.iconWidth}
+                            alt="Contemplative Reptile"
+                            image={ClientsImage}
+                            title="Contemplative Reptile"
+                        />
+                        <CardContent>
+                            <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
+                                Client List
+          </Typography><Typography variant="body2" color="textSecondary" component="p">
+                                Client List associated with your account
+          </Typography>
+
+                        </CardContent>
+                    </CardActionArea>
+                    <CardActions>
+                        <Button size="small" color="primary" component={Link} to="/measures">
+                            View
+                        </Button>
+                    </CardActions>
+                </Card> */}
+                <Card className={classes.tiles}>
+                    <CardActionArea>
+                        <CardMedia
+                            component="img"
+                            alt="Contemplative Reptile"
+                            className={classes.iconWidth}
+                            image={DashboardImage}
+                            title="Contemplative Reptile"
+                        />
+                        <CardContent>
+                            <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
+                                Client Dashboard
+          </Typography><Typography variant="body2" color="textSecondary" component="p">
+                                Hardness Levels for a chosen client
+          </Typography>
+
+                        </CardContent>
+                    </CardActionArea>
+                    <CardActions>
+                        <Button size="small" color="primary" component={Link} to="/dashboard">
+                            View
+                        </Button>
+                    </CardActions>
+                </Card>
+                <Card className={classes.tiles}>
+                    <CardActionArea>
+                        <CardMedia
+                            component="img"
+                            alt="Contemplative Reptile"
+                            className={classes.iconWidthShort}
+                            image={MeasuresImage}
+                            title="Contemplative Reptile"
+                        />
+                        <CardContent>
+                            <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
+                                Measures
+          </Typography>
+                            <Typography variant="body2" color="textSecondary" component="p">
+                                List of Client Measures associtated with a chosen client
+          </Typography>
+                        </CardContent>
+                    </CardActionArea>
+                    <CardActions>
+                        <Button size="small" color="primary" component={Link} to="/measures">
+                            View
+                        </Button>
+                    </CardActions>
+                </Card>
             </div>
         </div>
     );

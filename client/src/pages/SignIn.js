@@ -69,7 +69,7 @@ export default function SignIn() {
                 if (response.data.email) {
                     localStorage.setItem('emailId', response.data.email)
                 }
-                window.location.href = '/measures';
+                window.location.href = '/landing';
             })
             .catch(function (e) {
                 console.log(e);
