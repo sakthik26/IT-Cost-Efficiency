@@ -59,49 +59,31 @@ import DashboardImage from '../assets/dashboard.png'
 import MeasuresImage from '../assets/focus.png'
 import ClientsImage from '../assets/team.png'
 import { Link } from 'react-router-dom'
-
-
 import CssBaseline from '@material-ui/core/CssBaseline';
-
 import List from '@material-ui/core/List';
-
 import Divider from '@material-ui/core/Divider';
-
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
-
+import DashboardIcon from '@material-ui/icons/Dashboard';
+import PersonIcon from '@material-ui/icons/Person';
+import ListIcon from '@material-ui/icons/List';
+import SettingsIcon from '@material-ui/icons/Settings';
+import clsx from 'clsx';
 const drawerWidth = 240;
 //simple dialog imports - end
-const tableIcons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
 
 
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
         margin: '0 auto',
+    },
+    leftnavClientTitle: {
+        paddingTop: '10px',
+        paddingLeft: '16px'
     },
     iconWidth: {
         width: '200px',
@@ -122,35 +104,28 @@ const useStyles = makeStyles(theme => ({
     tiles: {
         maxWidth: 345,
     },
+    title: {
+        flexGrow: 1,
+    },
     tilesShort: {
         maxWidth: 200,
     },
     alignCenter: {
         textAlign: 'center',
     },
-    menuButton: {
-        marginRight: theme.spacing(2),
+    appBar: {
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
     },
-    title: {
-        flexGrow: 1,
-    },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    submit: {
-        margin: theme.spacing(3, 0, 2),
-    },
-    customer: {
-        margin: 20
-    },
-    table: {
-        minWidth: 650,
-    },
-    chart: {
-        marginTop: 100,
-        width: '1000px !important',
-        height: '600px !important',
+    appBarShift: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -189,346 +164,47 @@ const useStyles = makeStyles(theme => ({
         }),
         marginLeft: 0,
     },
+
 }));
 
 function Settings() {
     const [openDrawer, setOpenDrawer] = React.useState(false);
     const theme = useTheme();
+    const classes = useStyles();
     const handleDrawerOpen = () => {
         setOpenDrawer(true);
     };
-
+    const [open, setOpen] = React.useState(false);
     const handleDrawerClose = () => {
         setOpenDrawer(false);
     };
-    const [baselineTotalCostColumns, setBaselineTotalCostColumns] = React.useState(
-        [
-            { title: 'Overall', field: 'overall' },
-            { title: '2020(€)', field: '2020', sorting: true },
-            { title: '2021(€)', field: '2021' },
-            { title: '2022(€)', field: '2022' },
-            { title: '2023(€)', field: '2023' },
-            { title: '2024(€)', field: '2024' },
-        ]);
-    const [baselineColumns, setBaselineColumns] = React.useState(
-        [
-            { title: 'Cost Type', field: 'costType' },
-            {
-                title: 'Sphere of Action',
-                field: 'sphereOfAction',
-                lookup: { '': '', 'infrastructure': 'Infrastructure', 'applications': 'Applications', 'partner': 'Partner', 'staff': 'Staff' },
-            },
-            { title: '2020(€)', field: '2020', sorting: true },
-            { title: '2021(€)', field: '2021' },
-            { title: '2022(€)', field: '2022' },
-            { title: '2023(€)', field: '2023' },
-            { title: '2024(€)', field: '2024' },
-        ]);
-
-    const [savingsColumns, setSavingsColumns] = React.useState(
-        [
-            { title: 'Cost Type', field: 'costType' },
-            {
-                title: 'Sphere of Action',
-                field: 'sphereOfAction',
-                lookup: { '': '', 'infrastructure': 'Infrastructure', 'applications': 'Applications', 'partner': 'Partner', 'staff': 'Staff' },
-            },
-            { title: '2020(€)', field: '2020', sorting: true },
-            { title: '2021(€)', field: '2021' },
-            { title: '2022(€)', field: '2022' },
-            { title: '2023(€)', field: '2023' },
-            { title: '2024(€)', field: '2024' },
-        ])
-
-    const [rows, setRows] = React.useState([]);
-    const [savingsCostTypeRows, setSavingsCostTypeRows] = React.useState([]);
-    const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
-    const [isAdmin, setAdmin] = React.useState(false);
-    const [customers, setCustomers] = React.useState('');
-    const [customerOptions, setCustomerOptions] = React.useState([]);
-    const [consultant, setConsultant] = React.useState('');
-    const [consultantOptions, setConsultantOptions] = React.useState([]);
 
 
-    const [customersAssigned, setCustomersAssigned] = React.useState([]);
-    const [selectedCustomer, setSelectedCustomer] = React.useState('');
-    const [consultantAccess, setConsultantAccess] = React.useState([]);
-
-    const [customerName, setCustomerName] = React.useState('');
-    const [customerDepartment, setCustomerDepartment] = React.useState('');
-    const handleCustomerChange = (event) => {
-        setCustomers(event.target.value);
-    };
-
-    const handleCustomerToDeleteChange = (event) => {
-        setCustomerToDelete(event.target.value);
-    };
-    const handleConsultantToDeleteChange = (event) => {
-        setConsultantToDelete(event.target.value);
-    };
-
-    const handleConsultantToDeactivateChange = (event) => {
-        setConsultantToDeactivate(event.target.value);
-    };
-    const handleConsultantChange = (event) => {
-        setConsultant(event.target.value);
-    };
-
-    const changeCustomerSelected = (event) => {
-        setSelectedCustomer(event.target.value)
-        localStorage.setItem('customerId', event.target.value)
-        fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
-            method: 'GET',
-            headers: { 'x-access-token': localStorage.getItem('token') || '' }
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                setRows(data);
-            })
-            .catch(error => console.log(error));
-
-    }
-
-    const handleConsultant = (event) => {
-
-        // if (consultantAccess.map(consultant => consultant.email).indexOf(consultant) >= 0) {
-        //   alert('Consultant already assigned to the customer')
-        // }
-
-        for (var i = 0; i < consultantAccess.length; i++) {
-            if (consultantAccess[i].email == consultant && consultantAccess[i].customer == customers) {
-                alert('Consultant already assigned to the customer')
-                return
-            }
-        }
-        let payload = {
-            customer: customers,
-            email: consultant,
-            permission: "root",
-            permission_level: "1"
-        }
-
-        console.log(consultantAccess)
-
-        axios
-            .post("http://localhost:4000/userrights", payload, {
-            })
-            .then((response) => {
-                setConsultantAccess(consultantAccess => [...consultantAccess, response.data]);
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-    const [open, setOpen] = React.useState(false);
-    const handleClick = () => {
-        setOpen(true);
-    };
     const logOut = (event, reason) => {
         localStorage.removeItem('token')
         localStorage.removeItem('id')
         localStorage.removeItem('customerId')
         window.location.href = '/signin'
     };
-    const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setOpen(false);
-    };
-    const handleDelete = (email) => {
-
-        axios
-            .delete("http://localhost:4000/userrights/" + email, {
-            })
-            .then((response) => {
-                let consultants = consultantAccess.filter(consultant => consultant.email != email)
-                setConsultantAccess(consultants)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    };
 
 
-    useEffect(() => {
-        // const result = await axios.get(
-        //   'http://localhost:4000/measures',
-        // );
-
-        axios
-            .get("http://localhost:4000/api/users ", {
-            })
-            .then((response) => {
-                setConsultantOptions(response.data.filter((consultant) => consultant.email != "admin@gmail.com").map((consultant) => consultant.email));
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-
-        axios
-            .get("http://localhost:4000/userrights", {
-            })
-            .then((response) => {
-                // setCustomerOptions(response.data.map((customer) => customer.customer));
-                // var customers = {}
-                // for (var i = 0; i < response.data.length; i++) {
-                //   customers[response.data[i].customer] = []
-                // }
-                setConsultantAccess(response.data)
-                setCustomersAssigned(response.data.filter((consultant) => consultant.email == localStorage.getItem('emailId')))
-
-                setSelectedCustomer(response.data.filter((consultant) => consultant.email == localStorage.getItem('emailId'))[0].customerId)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }, []); const classes = useStyles();
-
-
-    const [createCustomerDialog, showCreateCustomerDialog] = React.useState(false);
-    const [deleteCustomerDialog, showDeleteCustomerDialog] = React.useState(false);
-    const [deleteConsultantDialog, showDeleteConsultantDialog] = React.useState(false);
-    const [deactivateConsultantDialog, showDeactivateConsultantDialog] = React.useState(false);
-    const [customerToDelete, setCustomerToDelete] = React.useState('');
-    const [consultantToDelete, setConsultantToDelete] = React.useState('');
-    const [consultantToDeactivate, setConsultantToDeactivate] = React.useState('');
-
-    const handleCreateCustomerOpen = () => {
-        showCreateCustomerDialog(true);
-    };
-
-    const handleCreateCustomerClose = () => {
-        showCreateCustomerDialog(false);
-    };
-
-    const handleDeleteCustomerOpen = () => {
-        showDeleteCustomerDialog(true);
-    };
-
-    const handleDeleteCustomerClose = () => {
-        showDeleteCustomerDialog(false);
-    };
-
-    const handleDeleteConsultantOpen = () => {
-        showDeleteConsultantDialog(true);
-    };
-
-    const handleDeleteConsultantClose = () => {
-        showDeleteConsultantDialog(false);
-    };
-
-    const handleDeactivateConsultantOpen = () => {
-        showDeactivateConsultantDialog(true);
-    };
-
-    const handleDeactivateConsultantClose = () => {
-        showDeactivateConsultantDialog(false);
-    };
-
-    const handleCreateCustomer = () => {
-        var payload = {
-            customer: customerName,
-            department: customerDepartment
-        }
-        axios
-            .post("http://localhost:4000/customers", payload, {
-            })
-            .then((response) => {
-                setCustomerOptions(customer => [...customer, response.data.customer]);
-                showCreateCustomerDialog(false);
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-
-    const handleDeleteCustomer = (customerToDelete) => {
-
-        axios
-            .delete("http://localhost:4000/customers/" + customerToDelete, {
-            })
-            .then((response) => {
-                let customers = customerOptions.filter(customer => customer != customerToDelete)
-                setCustomerOptions(customers)
-                handleDeleteCustomerClose()
-                window.location.href = "/measures"
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-    const handleDeleteConsultant = (consultantToDelete) => {
-
-        axios
-            .delete("http://localhost:4000/api/users/" + consultantToDelete, {
-            })
-            .then((response) => {
-                let consultants = consultantOptions.filter(consultant => consultant != consultantToDelete)
-                setConsultantOptions(consultants)
-                handleDeleteConsultantClose()
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-    const handleDeactivateConsultant = (consultantToDeactivate) => {
-
-        axios
-            .put("http://localhost:4000/api/users/" + consultantToDeactivate, {
-                "email": consultantToDeactivate, "isActive": false
-            })
-            .then((response) => {
-
-                handleDeactivateConsultantClose()
-                alert('Consultant has been deactivated')
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-
-    const handleBaselineColumns = (event) => {
-        setBaselineColumns(columns => [...columns, { title: '2025', field: '2025' },
-        { title: '2026', field: '2026' },
-        { title: '2027', field: '2027' },
-        { title: '2028', field: '2029' },
-        { title: '2029', field: '2029' }]);
-    }
-
-    const handleBaselineTotalCostRows = (event) => {
-        setBaselineTotalCostColumns(columns => [...columns, { title: '2025', field: '2025' },
-        { title: '2026', field: '2026' },
-        { title: '2027', field: '2027' },
-        { title: '2028', field: '2029' },
-        { title: '2029', field: '2029' }]);
-    }
-
-    const handleSavingsColumns = (event) => {
-        setSavingsColumns(columns => [...columns, { title: '2025', field: '2025' },
-        { title: '2026', field: '2026' },
-        { title: '2027', field: '2027' },
-        { title: '2028', field: '2029' },
-        { title: '2029', field: '2029' }]);
-    }
-
-    const changeCustomerName = (e) => {
-        setCustomerName(e.target.value)
-    }
-
-    const changeCustomerDepartment = (e) => {
-        setCustomerDepartment(e.target.value)
-    }
     return (
         <div className={classes.root}>
-            <AppBar position="static">
+            <CssBaseline />
+            <AppBar
+                position="fixed"
+                className={clsx(classes.appBar, {
+                    [classes.appBarShift]: openDrawer,
+                })}
+            >
                 <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        className={clsx(classes.menuButton, openDrawer && classes.hide)}
+                    >
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
@@ -537,13 +213,12 @@ function Settings() {
                     {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
                     <Button color="inherit" onClick={logOut}>Logout</Button>
                 </Toolbar>
-
             </AppBar>
             <Drawer
                 className={classes.drawer}
                 variant="persistent"
                 anchor="left"
-                open={open}
+                open={openDrawer}
                 classes={{
                     paper: classes.drawerPaper,
                 }}
@@ -554,103 +229,110 @@ function Settings() {
                     </IconButton>
                 </div>
                 <Divider />
+
                 <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
+                    <ListItem button key='User Dashboard' component={Link} to="/landing">
+                        <ListItemIcon><DashboardIcon /></ListItemIcon>
+                        <ListItemText primary='User Dashboard' />
+                    </ListItem>
                 </List>
                 <Divider />
+                <Typography className={classes.leftnavClientTitle}>
+                    Client
+                        </Typography>
                 <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
+                    <ListItem button key='Dashboard' component={Link} to="/dashboard">
+                        <ListItemIcon><DashboardIcon /></ListItemIcon>
+                        <ListItemText primary='Dashboard' />
+                    </ListItem>
+                    <ListItem button key='Measures' component={Link} to="/measures">
+                        <ListItemIcon><ListIcon /></ListItemIcon>
+                        <ListItemText primary='Measures' />
+                    </ListItem>
+                    <ListItem button key='Settings' component={Link} to="/settings">
+                        <ListItemIcon><SettingsIcon /></ListItemIcon>
+                        <ListItemText primary='Settings' />
+                    </ListItem>
                 </List>
             </Drawer>
-            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="error">
-                    Please enter values for all the fields
-        </Alert>
-            </Snackbar>
-            <div className={classes.card}>
-                {/* <Card className={classes.tiles}>
-                    <CardActionArea>
-                        <CardMedia
-                            component="img"
-                            className={classes.iconWidth}
-                            alt="Contemplative Reptile"
-                            image={ClientsImage}
-                            title="Contemplative Reptile"
-                        />
-                        <CardContent>
-                            <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
-                                Client List
+            <main
+            >
+                <div className={classes.card}>
+                    <Card className={classes.tiles}>
+                        <CardActionArea>
+                            <CardMedia
+                                component="img"
+                                className={classes.iconWidth}
+                                alt="Contemplative Reptile"
+                                image={ClientsImage}
+                                title="Contemplative Reptile"
+                            />
+                            <CardContent>
+                                <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
+                                    Client List
           </Typography><Typography variant="body2" color="textSecondary" component="p">
-                                Client List associated with your account
+                                    Client List associated with your account
           </Typography>
 
-                        </CardContent>
-                    </CardActionArea>
-                    <CardActions>
-                        <Button size="small" color="primary" component={Link} to="/measures">
-                            View
+                            </CardContent>
+                        </CardActionArea>
+                        <CardActions>
+                            <Button size="small" color="primary" component={Link} to="/measures">
+                                View
                         </Button>
-                    </CardActions>
-                </Card> */}
-                <Card className={classes.tiles}>
-                    <CardActionArea>
-                        <CardMedia
-                            component="img"
-                            alt="Contemplative Reptile"
-                            className={classes.iconWidth}
-                            image={DashboardImage}
-                            title="Contemplative Reptile"
-                        />
-                        <CardContent>
-                            <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
-                                Client Dashboard
+                        </CardActions>
+                    </Card>
+                    <Card className={classes.tiles}>
+                        <CardActionArea>
+                            <CardMedia
+                                component="img"
+                                alt="Contemplative Reptile"
+                                className={classes.iconWidth}
+                                image={DashboardImage}
+                                title="Contemplative Reptile"
+                            />
+                            <CardContent>
+                                <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
+                                    Client Dashboard
           </Typography><Typography variant="body2" color="textSecondary" component="p">
-                                Hardness Levels for a chosen client
+                                    Hardness Levels for a chosen client
           </Typography>
 
-                        </CardContent>
-                    </CardActionArea>
-                    <CardActions>
-                        <Button size="small" color="primary" component={Link} to="/dashboard">
-                            View
+                            </CardContent>
+                        </CardActionArea>
+                        <CardActions>
+                            <Button size="small" color="primary" component={Link} to="/dashboard">
+                                View
                         </Button>
-                    </CardActions>
-                </Card>
-                <Card className={classes.tiles}>
-                    <CardActionArea>
-                        <CardMedia
-                            component="img"
-                            alt="Contemplative Reptile"
-                            className={classes.iconWidthShort}
-                            image={MeasuresImage}
-                            title="Contemplative Reptile"
-                        />
-                        <CardContent>
-                            <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
-                                Measures
+                        </CardActions>
+                    </Card>
+                    <Card className={classes.tiles}>
+                        <CardActionArea>
+                            <CardMedia
+                                component="img"
+                                alt="Contemplative Reptile"
+                                className={classes.iconWidthShort}
+                                image={MeasuresImage}
+                                title="Contemplative Reptile"
+                            />
+                            <CardContent>
+                                <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
+                                    Measures
           </Typography>
-                            <Typography variant="body2" color="textSecondary" component="p">
-                                List of Client Measures associtated with a chosen client
+                                <Typography variant="body2" color="textSecondary" component="p">
+                                    List of Client Measures associtated with a chosen client
           </Typography>
-                        </CardContent>
-                    </CardActionArea>
-                    <CardActions>
-                        <Button size="small" color="primary" component={Link} to="/measures">
-                            View
+                            </CardContent>
+                        </CardActionArea>
+                        <CardActions>
+                            <Button size="small" color="primary" component={Link} to="/measures">
+                                View
                         </Button>
-                    </CardActions>
-                </Card>
-            </div>
+                        </CardActions>
+                    </Card>
+                </div>
+            </main>
+
         </div>
     );
 }
