@@ -25,12 +25,15 @@ const UserSchema = new mongoose.Schema({
         maxlength: 255
     },
     //give different access rights if admin or not 
-    isAdmin: Boolean,
-    isActive: 
-    {
+    isAdmin: {
         type: Boolean,
-        default: true
-    }
+        default: false
+    },
+    isActive:
+        {
+            type: Boolean,
+            default: true
+        }
 
 });
 

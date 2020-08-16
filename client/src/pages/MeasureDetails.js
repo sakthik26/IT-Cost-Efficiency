@@ -359,21 +359,6 @@ export default function MeasureDetails(props) {
     return (
         <div className={classes.root}>
 
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        IT Cost Efficiency
-        </Typography>
-
-                    <img style={{ width: '50px' }} src={logo} alt="logo" />
-                    {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
-                    <Button color="inherit" onClick={logOut}>Logout</Button>
-                </Toolbar>
-
-            </AppBar>
             <Typography variant="h5" className={classes.margin} style={{
                 paddingLeft: '10px'
             }}>

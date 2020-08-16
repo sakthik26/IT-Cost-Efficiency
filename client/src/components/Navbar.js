@@ -17,7 +17,7 @@ import ChevronLeft from '@material-ui/icons/ChevronLeft';
 import ChevronRight from '@material-ui/icons/ChevronRight';
 import Clear from '@material-ui/icons/Clear';
 import DeleteOutline from '@material-ui/icons/DeleteOutline';
-
+import Drawer from '@material-ui/core/Drawer';
 import Edit from '@material-ui/icons/Edit';
 import FilterList from '@material-ui/icons/FilterList';
 import FirstPage from '@material-ui/icons/FirstPage';
@@ -71,7 +71,6 @@ import DashboardIcon from '@material-ui/icons/Dashboard';
 import PersonIcon from '@material-ui/icons/Person';
 import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
-import Drawer from '@material-ui/core/Drawer';
 import clsx from 'clsx';
 const drawerWidth = 240;
 //simple dialog imports - end
@@ -168,14 +167,14 @@ const useStyles = makeStyles(theme => ({
 
 }));
 
-function Settings() {
-
+function Navbar() {
+    const [openDrawer, setOpenDrawer] = React.useState(false);
     const theme = useTheme();
     const classes = useStyles();
-    const [openDrawer, setOpenDrawer] = React.useState(false);
     const handleDrawerOpen = () => {
         setOpenDrawer(true);
     };
+    const [open, setOpen] = React.useState(false);
     const handleDrawerClose = () => {
         setOpenDrawer(false);
     };
@@ -185,6 +184,8 @@ function Settings() {
         localStorage.removeItem('token')
         localStorage.removeItem('id')
         localStorage.removeItem('customerId')
+        localStorage.removeItem('isActive')
+        localStorage.removeItem('isAdmin')
         window.location.href = '/signin'
     };
 
@@ -192,87 +193,74 @@ function Settings() {
     return (
         <div className={classes.root}>
             <CssBaseline />
-
-            <main
+            <AppBar
+                position="fixed"
+                className={clsx(classes.appBar, {
+                    [classes.appBarShift]: openDrawer,
+                })}
             >
-                <div className={classes.card}>
-                    <Card className={classes.tiles}>
-                        <CardActionArea>
-                            <CardMedia
-                                component="img"
-                                className={classes.iconWidth}
-                                alt="Contemplative Reptile"
-                                image={ClientsImage}
-                                title="Contemplative Reptile"
-                            />
-                            <CardContent>
-                                <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
-                                    Client List
-          </Typography><Typography variant="body2" color="textSecondary" component="p">
-                                    Client List associated with your account
-          </Typography>
-
-                            </CardContent>
-                        </CardActionArea>
-                        <CardActions>
-                            <Button size="small" color="primary" component={Link} to="/clientlist">
-                                View
-                        </Button>
-                        </CardActions>
-                    </Card>
-                    <Card className={classes.tiles}>
-                        <CardActionArea>
-                            <CardMedia
-                                component="img"
-                                alt="Contemplative Reptile"
-                                className={classes.iconWidth}
-                                image={DashboardImage}
-                                title="Contemplative Reptile"
-                            />
-                            <CardContent>
-                                <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
-                                    Client Dashboard
-          </Typography><Typography variant="body2" color="textSecondary" component="p">
-                                    Hardness Levels for a chosen client
-          </Typography>
-
-                            </CardContent>
-                        </CardActionArea>
-                        <CardActions>
-                            <Button size="small" color="primary" component={Link} to="/dashboard">
-                                View
-                        </Button>
-                        </CardActions>
-                    </Card>
-                    <Card className={classes.tiles}>
-                        <CardActionArea>
-                            <CardMedia
-                                component="img"
-                                alt="Contemplative Reptile"
-                                className={classes.iconWidthShort}
-                                image={MeasuresImage}
-                                title="Contemplative Reptile"
-                            />
-                            <CardContent>
-                                <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
-                                    Measures
-          </Typography>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                    List of Client Measures associtated with a chosen client
-          </Typography>
-                            </CardContent>
-                        </CardActionArea>
-                        <CardActions>
-                            <Button size="small" color="primary" component={Link} to="/measures">
-                                View
-                        </Button>
-                        </CardActions>
-                    </Card>
+                <Toolbar>
+                    {window.location.pathname === '/' || window.location.pathname === '/signin' ? null :
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawerOpen}
+                            edge="start"
+                            className={clsx(classes.menuButton, openDrawer && classes.hide)}
+                        >
+                            <MenuIcon />
+                        </IconButton>}
+                    <Typography variant="h6" className={classes.title}>
+                        IT Cost Efficiency
+        </Typography>
+                    {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
+                    {window.location.pathname === '/' || window.location.pathname === '/signin' ? null :
+                        <Button color="inherit" onClick={logOut}>Logout</Button>}
+                </Toolbar>
+            </AppBar>
+            <Drawer
+                className={classes.drawer}
+                variant="persistent"
+                anchor="left"
+                open={openDrawer}
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+            >
+                <div className={classes.drawerHeader}>
+                    <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
                 </div>
-            </main>
+                <Divider />
 
+                <List>
+                    <ListItem button key='User Dashboard' component={Link} to="/landing">
+                        <ListItemIcon><DashboardIcon /></ListItemIcon>
+                        <ListItemText primary='User Dashboard' />
+                    </ListItem>
+                </List>
+                <Divider />
+                <Typography className={classes.leftnavClientTitle}>
+                    Client
+                        </Typography>
+                <List>
+                    <ListItem button key='Dashboard' component={Link} to="/dashboard">
+                        <ListItemIcon><DashboardIcon /></ListItemIcon>
+                        <ListItemText primary='Dashboard' />
+                    </ListItem>
+                    <ListItem button key='Measures' component={Link} to="/measures">
+                        <ListItemIcon><ListIcon /></ListItemIcon>
+                        <ListItemText primary='Measures' />
+                    </ListItem>
+                    <ListItem button key='Settings' component={Link} to="/settings">
+                        <ListItemIcon><SettingsIcon /></ListItemIcon>
+                        <ListItemText primary='Settings' />
+                    </ListItem>
+                </List>
+            </Drawer>
         </div>
     );
 }
 
-export default Settings;
+export default Navbar;

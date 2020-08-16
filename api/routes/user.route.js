@@ -54,6 +54,7 @@ router.post('/login', async (req, res) => {
                     id: user.id,
                     email: user.email,
                     isActive: user.isActive,
+                    isAdmin:user.isAdmin,
                     customerId: userRight !== null ? userRight.customerId : null,
                     token: token
                 });
