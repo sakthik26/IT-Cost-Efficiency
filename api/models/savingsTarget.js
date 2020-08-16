@@ -11,10 +11,11 @@ const savingsTargetSchema = new mongoose.Schema({
       type: String
     },
   year:
-    {
+    [{
       totalCost: Number,
-      year: Number
-    },
+      year: Number,
+      _id: false
+    }],
   description: {
     type: String
   }

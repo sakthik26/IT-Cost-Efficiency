@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
 
 
 // Creates new baseline in the database
-router.post('/', async (req, res) => {
+/*router.post('/', async (req, res) => {
   const baseline = new Baseline({
     customer: req.body.customer,
     year: req.body.year,
@@ -39,26 +39,18 @@ router.post('/', async (req, res) => {
     .catch(err => {
       res.json({ message: err });
     });
-});
+});*/
 
 // Update baseline based on customer name
-router.put('/:customer', async (req, res) => {
+router.put('/:customerId', async (req, res) => {
   var objForUpdate = {};
   if (req.body.customer) objForUpdate.customer = req.body.customer;
   if (req.body.year) objForUpdate.year = req.body.year;
   if (req.body.description) objForUpdate.description = req.body.description;
 
-  //compare customer name from customer and baseline collections and assign corresponding customerId
-  const customer = await Customer.findOne({ customer: req.body.customer, _id: req.body._id });
-  console.log(customer);
-  if (objForUpdate.customer == customer.customer) {
-    objForUpdate.customerId = customer._id;
-  }
-
-
   try {
     const updatedBaseline = await Baseline.findOneAndUpdate(
-      { customer: req.params.customer },
+      { customerId: req.params.customerId },
       {
         $set: objForUpdate
       }
