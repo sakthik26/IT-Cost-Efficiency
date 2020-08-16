@@ -18,7 +18,7 @@ function Copyright() {
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://material-ui.com/">
-                Your Website
+                IT Cost Efficiency
       </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -32,6 +32,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+    },
+    formInput: {
+        marginBottom: '10px'
     },
     avatar: {
         margin: theme.spacing(1),
@@ -66,10 +69,14 @@ export default function SignIn() {
                 localStorage.setItem('id', response.data.id)
                 localStorage.setItem('customerId', response.data.customerId)
                 localStorage.setItem('isActive', response.data.isActive)
+                localStorage.setItem('isAdmin', response.data.isAdmin)
                 if (response.data.email) {
                     localStorage.setItem('emailId', response.data.email)
                 }
-                window.location.href = '/measures';
+                if (response.data.isAdmin == true)
+                    window.location.href = "/admin"
+                else
+                    window.location.href = '/landing';
             })
             .catch(function (e) {
                 console.log(e);
@@ -91,6 +98,7 @@ export default function SignIn() {
                     <Grid item xs={12}>
                         <TextField
                             variant="outlined"
+                            className={classes.formInput}
                             required
                             fullWidth
                             id="email"
@@ -100,6 +108,7 @@ export default function SignIn() {
                             autoComplete="email"
                         />
                     </Grid>
+
                     <Grid item xs={12}>
                         <TextField
                             variant="outlined"
@@ -113,10 +122,10 @@ export default function SignIn() {
                             autoComplete="current-password"
                         />
                     </Grid>
-                    <FormControlLabel
+                    {/* <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
                         label="Remember me"
-                    />
+                    /> */}
                     <Button
                         onClick={handleSignIn}
                         fullWidth
@@ -127,11 +136,6 @@ export default function SignIn() {
                         Sign In
           </Button>
                     <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-              </Link>
-                        </Grid>
                         <Grid item>
                             <Link href="/" variant="body2">
                                 {"Don't have an account? Sign Up"}

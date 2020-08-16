@@ -553,19 +553,7 @@ function Settings() {
     }
     return (
         <div className={classes.root}>
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        IT Cost Efficiency
-        </Typography>
-                    {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
-                    <Button color="inherit" onClick={logOut}>Logout</Button>
-                </Toolbar>
 
-            </AppBar>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error">
                     Please enter values for all the fields
