@@ -100,10 +100,10 @@ router.post("/", async (req, res) => {
 });
 
 // Update name, email, password (hash the password during update) of the user
-router.put('/:email', async (req, res) => {
+router.put('/:_id', async (req, res) => {
     try {
         const updatedUser = await User.findOneAndUpdate(
-            { email: req.params.email },
+            { _id: req.params._id },
             {
                 $set: {
                     email: req.body.email, isActive: req.body.isActive

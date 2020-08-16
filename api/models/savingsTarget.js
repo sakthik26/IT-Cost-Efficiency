@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const baselineSchema = new mongoose.Schema({
+const savingsTargetSchema = new mongoose.Schema({
   customerId:
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -23,4 +23,4 @@ const baselineSchema = new mongoose.Schema({
 });
 
 
-module.exports = mongoose.model('Baseline', baselineSchema);
+module.exports = mongoose.model('Savings Target', savingsTargetSchema);
