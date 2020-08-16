@@ -35,9 +35,6 @@ const savingsSchema = new mongoose.Schema({
     finishDate: {
         type: Date
     }
-
-
-
 });
 
 
