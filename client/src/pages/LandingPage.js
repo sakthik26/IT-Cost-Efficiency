@@ -68,7 +68,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import PersonIcon from '@material-ui/icons/Person';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Drawer from '@material-ui/core/Drawer';
@@ -113,6 +113,15 @@ const useStyles = makeStyles(theme => ({
     },
     alignCenter: {
         textAlign: 'center',
+    },
+    consultantDetails: {
+        /* float: right; */
+        display: 'flex',
+        /* float: right; */
+        flexDirection: 'row-reverse',
+        /* position: relative; */
+        margin: '100px 30px 0px 0px',
+        alignItems: 'center'
     },
     appBar: {
         transition: theme.transitions.create(['margin', 'width'], {
@@ -173,12 +182,35 @@ function Settings() {
     const theme = useTheme();
     const classes = useStyles();
     const [openDrawer, setOpenDrawer] = React.useState(false);
+    const [consulantName, setConsultantName] = React.useState('');
     const handleDrawerOpen = () => {
         setOpenDrawer(true);
     };
     const handleDrawerClose = () => {
         setOpenDrawer(false);
     };
+
+    useEffect(() => {
+        // const result = await axios.get(
+        //   'http://localhost:4000/measures',
+        // );
+        if (!localStorage.getItem('id')) {
+            window.location.href = "/signin"
+            return
+        }
+
+        axios
+            .get("http://localhost:4000/api/users/current?id=" + localStorage.getItem('id'), {
+                headers: { 'x-access-token': localStorage.getItem('token') }
+            })
+            .then((response) => {
+                setConsultantName(response.data.name)
+
+            })
+            .catch(function (e) {
+                console.log(e);
+            });
+    }, []);
 
 
     const logOut = (event, reason) => {
@@ -192,7 +224,11 @@ function Settings() {
     return (
         <div className={classes.root}>
             <CssBaseline />
+            <div className={classes.consultantDetails}>
+                {consulantName}
+                <AccountCircleIcon fontSize='medium' />
 
+            </div>
             <main
             >
                 <div className={classes.card}>

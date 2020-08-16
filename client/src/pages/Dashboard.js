@@ -532,12 +532,13 @@ function Settings() {
                             legend: { position: 'bottom' },
                         }}
                     />
-                </div> : isAdmin == false && localStorage.getItem('isActive') == "true" ? <Typography variant="h6" className={classes.title}>
-                    You have not been assigned customers at the moment, please contact your administrator.
+                </div> : isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
+                Your account has been temporarily deactivated, please contact your administrator.
+                 
           </Typography>
                     :
                     <Typography variant="h6" className={classes.title}>
-                        Your account has been temporarily deactivated, please contact your administrator.
+                          You have not been assigned customers at the moment, please contact your administrator.
           </Typography>
             }
         </div>

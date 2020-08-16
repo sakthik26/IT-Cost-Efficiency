@@ -37,7 +37,7 @@ import Select from '@material-ui/core/Select';
 import Chip from '@material-ui/core/Chip';
 import FaceIcon from '@material-ui/icons/Face';
 import DoneIcon from '@material-ui/icons/Done';
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 
 // simple dialog imports
 
@@ -95,6 +95,15 @@ const useStyles = makeStyles(theme => ({
     table: {
         minWidth: 650,
     },
+    clientDetails: {
+        /* float: right; */
+        display: 'flex',
+        /* float: right; */
+        flexDirection: 'row-reverse',
+        /* position: relative; */
+        margin: '100px 30px 0px 0px',
+        alignItems: 'center'
+    },
 }));
 
 function Measures() {
@@ -111,88 +120,9 @@ function Measures() {
             { title: 'Status', field: 'status' },
             { title: 'Status Lang', field: 'statusLang' },
         ]);
-    const [rows, setRows] = React.useState({
-        rows: []
-    });
+    const [rows, setRows] = React.useState([]);
     const [isAdmin, setAdmin] = React.useState(false);
-    const [customers, setCustomers] = React.useState('');
-    const [customerOptions, setCustomerOptions] = React.useState([]);
-    const [consultant, setConsultant] = React.useState('');
-    const [consultantOptions, setConsultantOptions] = React.useState([]);
-
-
-    const [customersAssigned, setCustomersAssigned] = React.useState([]);
-    const [selectedCustomer, setSelectedCustomer] = React.useState('');
-    const [consultantAccess, setConsultantAccess] = React.useState([]);
-
     const [customerName, setCustomerName] = React.useState('');
-    const [customerDepartment, setCustomerDepartment] = React.useState('');
-    const handleCustomerChange = (event) => {
-        setCustomers(event.target.value);
-    };
-
-    const handleCustomerToDeleteChange = (event) => {
-        setCustomerToDelete(event.target.value);
-    };
-    const handleConsultantToDeleteChange = (event) => {
-        setConsultantToDelete(event.target.value);
-    };
-
-    const handleConsultantToDeactivateChange = (event) => {
-        setConsultantToDeactivate(event.target.value);
-    };
-    const handleConsultantChange = (event) => {
-        setConsultant(event.target.value);
-    };
-
-    const changeCustomerSelected = (event) => {
-        setSelectedCustomer(event.target.value)
-        localStorage.setItem('customerId', event.target.value)
-        fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
-            method: 'GET',
-            headers: { 'x-access-token': localStorage.getItem('token') || '' }
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                setRows(data);
-            })
-            .catch(error => console.log(error));
-
-    }
-
-    const handleConsultant = (event) => {
-
-        // if (consultantAccess.map(consultant => consultant.email).indexOf(consultant) >= 0) {
-        //   alert('Consultant already assigned to the customer')
-        // }
-
-        for (var i = 0; i < consultantAccess.length; i++) {
-            if (consultantAccess[i].email == consultant && consultantAccess[i].customer == customers) {
-                alert('Consultant already assigned to the customer')
-                return
-            }
-        }
-        let payload = {
-            customer: customers,
-            email: consultant,
-            permission: "root",
-            permission_level: "1"
-        }
-
-        console.log(consultantAccess)
-
-        axios
-            .post("http://localhost:4000/userrights", payload, {
-            })
-            .then((response) => {
-                setConsultantAccess(consultantAccess => [...consultantAccess, response.data]);
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
     const [open, setOpen] = React.useState(false);
     const handleClick = () => {
         setOpen(true);
@@ -209,19 +139,6 @@ function Measures() {
         }
 
         setOpen(false);
-    };
-    const handleDelete = (email) => {
-
-        axios
-            .delete("http://localhost:4000/userrights/" + email, {
-            })
-            .then((response) => {
-                let consultants = consultantAccess.filter(consultant => consultant.email != email)
-                setConsultantAccess(consultants)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
     };
 
 
@@ -244,161 +161,26 @@ function Measures() {
             .then(data => {
                 console.log(data)
                 setRows(data);
+                setCustomerName(data[0].customer)
             })
             .catch(error => console.log(error));
 
-
-        axios
-            .get("http://localhost:4000/customers", {
-            })
-            .then((response) => {
-                setCustomerOptions(response.data.map((customer) => customer.customer));
-                // var customers = {}
-                // for (var i = 0; i < response.data.length; i++) {
-                //   customers[response.data[i].customer] = []
-                // }
-                // setConsultantAccess(customers)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-
-        axios
-            .get("http://localhost:4000/api/users ", {
-            })
-            .then((response) => {
-                setConsultantOptions(response.data.filter((consultant) => consultant.email != "admin@gmail.com").map((consultant) => consultant.email));
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-
-
     }, []); const classes = useStyles();
 
-
-    const [createCustomerDialog, showCreateCustomerDialog] = React.useState(false);
-    const [deleteCustomerDialog, showDeleteCustomerDialog] = React.useState(false);
-    const [deleteConsultantDialog, showDeleteConsultantDialog] = React.useState(false);
-    const [deactivateConsultantDialog, showDeactivateConsultantDialog] = React.useState(false);
-    const [customerToDelete, setCustomerToDelete] = React.useState('');
-    const [consultantToDelete, setConsultantToDelete] = React.useState('');
-    const [consultantToDeactivate, setConsultantToDeactivate] = React.useState('');
-
-    const handleCreateCustomerOpen = () => {
-        showCreateCustomerDialog(true);
-    };
-
-    const handleCreateCustomerClose = () => {
-        showCreateCustomerDialog(false);
-    };
-
-    const handleDeleteCustomerOpen = () => {
-        showDeleteCustomerDialog(true);
-    };
-
-    const handleDeleteCustomerClose = () => {
-        showDeleteCustomerDialog(false);
-    };
-
-    const handleDeleteConsultantOpen = () => {
-        showDeleteConsultantDialog(true);
-    };
-
-    const handleDeleteConsultantClose = () => {
-        showDeleteConsultantDialog(false);
-    };
-
-    const handleDeactivateConsultantOpen = () => {
-        showDeactivateConsultantDialog(true);
-    };
-
-    const handleDeactivateConsultantClose = () => {
-        showDeactivateConsultantDialog(false);
-    };
-
-    const handleCreateCustomer = () => {
-        var payload = {
-            customer: customerName,
-            department: customerDepartment
-        }
-        axios
-            .post("http://localhost:4000/customers", payload, {
-            })
-            .then((response) => {
-                setCustomerOptions(customer => [...customer, response.data.customer]);
-                showCreateCustomerDialog(false);
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-
-    const handleDeleteCustomer = (customerToDelete) => {
-
-        axios
-            .delete("http://localhost:4000/customers/" + customerToDelete, {
-            })
-            .then((response) => {
-                let customers = customerOptions.filter(customer => customer != customerToDelete)
-                setCustomerOptions(customers)
-                handleDeleteCustomerClose()
-                window.location.href = "/measures"
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-    const handleDeleteConsultant = (consultantToDelete) => {
-
-        axios
-            .delete("http://localhost:4000/api/users/" + consultantToDelete, {
-            })
-            .then((response) => {
-                let consultants = consultantOptions.filter(consultant => consultant != consultantToDelete)
-                setConsultantOptions(consultants)
-                handleDeleteConsultantClose()
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-    const handleDeactivateConsultant = (consultantToDeactivate) => {
-
-        axios
-            .put("http://localhost:4000/api/users/" + consultantToDeactivate, {
-                "email": consultantToDeactivate, "isActive": false
-            })
-            .then((response) => {
-
-                handleDeactivateConsultantClose()
-                alert('Consultant has been deactivated')
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-
-
-
-    const changeCustomerName = (e) => {
-        setCustomerName(e.target.value)
-    }
-
-    const changeCustomerDepartment = (e) => {
-        setCustomerDepartment(e.target.value)
-    }
     return (
         <div className={classes.root}>
+            <div className={classes.clientDetails}>
+                {customerName}
+                <AssignmentIndIcon fontSize='medium' />
 
+            </div>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error">
                     Please enter values for all the fields
         </Alert>
             </Snackbar>
-            {rows.length > 0 && isAdmin == false && localStorage.getItem('isActive') == "true" ?
+            {/* {rows.length > 0 && isAdmin == false && localStorage.getItem('isActive') == "true" ? */}
+            {isAdmin == false && localStorage.getItem('isActive') == "true" ?
                 <div>
 
                     <Button style={{ marginLeft: "10px", marginTop: "10px", display: "block" }} variant="outlined" color="primary" onClick={() => { history.push('/measuredetails') }}>
@@ -406,6 +188,15 @@ function Measures() {
       </Button>
                     <MaterialTable
                         icons={tableIcons}
+                        localization={{
+                            pagination: {
+                                labelRowsPerPage: '10'
+                            },
+
+                            body: {
+                                emptyDataSourceMessage: 'No records to display',
+                            }
+                        }}
                         title="Customer Measures"
                         columns={columns}
                         actions={[
@@ -419,29 +210,7 @@ function Measures() {
                         ]}
                         data={rows}
                         editable={{
-                            // onRowUpdate: (newData, oldData) =>
-                            //   new Promise(resolve => {
-                            //     history.push('/measuredetails/'+)
-                            // setTimeout(() => {
-                            //   newData.customerId = localStorage.getItem('customerId') + ''
-                            //   resolve();
-                            //   axios
-                            //     .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
-                            //       headers: { 'x-access-token': localStorage.getItem('token') }
-                            //     })
-                            //     .then((response) => {
-                            //       setRows(prevState => {
-                            //         const data = [...prevState];
-                            //         data[data.indexOf(oldData)] = newData;
-                            //         return data;
-                            //       })
-                            //     })
-                            //     .catch(function (e) {
-                            //       console.log(e);
-                            //     }, 600);
-                            // })
 
-                            //}),
                             onRowDelete: oldData =>
                                 new Promise(resolve => {
                                     setTimeout(() => {
@@ -464,12 +233,13 @@ function Measures() {
                         }}
                     />
                 </div>
-                : isAdmin == false && localStorage.getItem('isActive') == "true" ? <Typography variant="h6" className={classes.title}>
-                    You have not been assigned customers at the moment, please contact your administrator.
-          </Typography>
-                    :
-                    <Typography variant="h6" className={classes.title}>
-                        Your account has been temporarily deactivated, please contact your administrator.
+                : isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
+                 Your account has been temporarily deactivated, please contact your administrator.
+                         
+                  </Typography>
+                :
+                <Typography variant="h6" className={classes.title}>
+                      You have not been assigned customers at the moment, please contact your administrator.
           </Typography>
             }
         </div>
