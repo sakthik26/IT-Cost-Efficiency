@@ -76,6 +76,10 @@ app.use("/savings", savingsRouter);
 const measureDetailsRouter = require('./routes/measureDetails');
 app.use("/measuredetails", measureDetailsRouter);
 
+//SavingsTarget Router
+const savingsTargetRouter = require('./routes/savingsTarget');
+app.use("/savingsTarget", savingsTargetRouter);
+
 
 
 
