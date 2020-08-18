@@ -1,36 +1,36 @@
 const express = require('express');
 const router = express.Router();
-const Baseline = require("../models/baseline");
+const SavingsTarget = require("../models/savingsTarget");
 const Customer = require("../models/customer");
 var ObjectId = require('mongodb').ObjectID;
 
-// Gets all the baselines
+// Gets all the savings target
 router.get('/', async (req, res) => {
   let customerId = req.query.customer;
   let objId = new ObjectId(req.query.customer);
   try {
-    const baseline = await Baseline.find({ customerId: objId })
-    res.json(baseline)
+    const savings = await SavingsTarget.find({ customerId: objId })
+    res.json(savings)
   } catch (err) {
     res.status(500).json({ message: err.message })
   }
 })
 
 
-// Creates new baseline in the database
+// Creates new savings target in the database
 /*router.post('/', async (req, res) => {
-  const baseline = new Baseline({
+  const savings = new SavingsTarget({
     customer: req.body.customer,
     year: req.body.year,
     description: req.body.description
   });
-  //compare customer name from customer and baseline collections and assign corresponding customerId
+  //compare customer name from customer and savings target collections and assign corresponding customerId
   const customer = await Customer.findOne({ customer: req.body.customer });
   console.log(customer);
-  if (baseline.customer == customer.customer) {
-    baseline.customerId = customer._id;
+  if (savings.customer == customer.customer) {
+    savings.customerId = customer._id;
   }
-  baseline.save()
+  savings.save()
     .then(data => {
       res.json(data);
     })
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
     });
 });*/
 
-// Update baseline based on customer name
+// Update savings target based on customer name
 router.put('/:customerId', async (req, res) => {
   var objForUpdate = {};
   if (req.body.customer) objForUpdate.customer = req.body.customer;
@@ -47,7 +47,7 @@ router.put('/:customerId', async (req, res) => {
   if (req.body.description) objForUpdate.description = req.body.description;
 
   try {
-    const updatedBaseline = await Baseline.findOneAndUpdate(
+    const updatedSavingsTarget = await SavingsTarget.findOneAndUpdate(
       { customerId: req.params.customerId },
       {
         $set: objForUpdate
@@ -55,8 +55,8 @@ router.put('/:customerId', async (req, res) => {
     )
 
 
-    await updatedBaseline.save();
-    res.json(updatedBaseline)
+    await updatedSavingsTarget.save();
+    res.json(updatedSavingsTarget)
 
   } catch (err) {
     res.json({ message: err });

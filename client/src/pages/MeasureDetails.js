@@ -26,7 +26,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { useEffect } from 'react';
 import logo from '../assets/logo.jpg'
-
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 import DateFnsUtils from '@date-io/date-fns';
 import {
     MuiPickersUtilsProvider,
@@ -39,6 +40,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
+        marginTop: '100px'
     },
     dropdownWidth: {
         width: '100%'
@@ -198,7 +200,17 @@ export default function MeasureDetails(props) {
     const handleHd5 = (date) => {
         setHd5(date);
     };
+    const [isAdmin, setAdmin] = React.useState(false);
     useEffect(() => {
+
+        if (!localStorage.getItem('id')) {
+            window.location.href = "/signin"
+            return
+        }
+        if (localStorage.getItem('emailId') && localStorage.getItem('isAdmin') == 'true') {
+            setAdmin(true)
+        }
+
         if (props.match.params && props.match.params.id) {
 
             var id = props.match.params.id
@@ -292,7 +304,8 @@ export default function MeasureDetails(props) {
             .put("http://localhost:4000/measuredetails/" + id, payload, {
             })
             .then((response) => {
-                history.push('/measures')
+                setOpenUpdated(true)
+                setTimeout(function () { history.push('/measures') }, 2000);
             })
             .catch(function (e) {
                 console.log(e);
@@ -343,12 +356,29 @@ export default function MeasureDetails(props) {
             .post("http://localhost:4000/measuredetails?customer=" + localStorage.getItem('customerId'), payload, {
             })
             .then((response) => {
-                history.push('/measures')
+                setOpen(true)
+                setTimeout(function () { history.push('/measures') }, 2000);
             })
             .catch(function (e) {
                 console.log(e);
             });
     }
+    const [open, setOpen] = React.useState(false);
+    const [openUpdated, setOpenUpdated] = React.useState(false);
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
+    const handleCloseUpdated = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenUpdated(false);
+    };
 
     const logOut = (event, reason) => {
         localStorage.removeItem('token')
@@ -358,14 +388,24 @@ export default function MeasureDetails(props) {
     };
     return (
         <div className={classes.root}>
-
+       {isAdmin == false && localStorage.getItem('isActive') == "true" ?
+       <div>
             <Typography variant="h5" className={classes.margin} style={{
                 paddingLeft: '10px'
             }}>
-                Measures: SBI
+                Create Measure
 
             </Typography>
-
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success">
+                    Measure created successfully.
+        </Alert>
+            </Snackbar>
+            <Snackbar open={openUpdated} autoHideDuration={6000} onClose={handleCloseUpdated}>
+                <Alert onClose={handleCloseUpdated} severity="success">
+                    Measure updated successfully.
+        </Alert>
+            </Snackbar>
             <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
                 <Tab label="New Measure" {...a11yProps(0)} />
                 <Tab label="All Measures" {...a11yProps(1)} />
@@ -410,7 +450,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
-                                required
+
                                 name="measureDescription"
                                 value={measureDescription}
                                 label="Measure Description"
@@ -615,7 +655,7 @@ export default function MeasureDetails(props) {
 
                         <Grid item xs={12}>
                             <TextField
-                                required
+
                                 value={additionalCharges}
                                 label="Overruns or Additional Charges"
                                 fullWidth
@@ -626,7 +666,7 @@ export default function MeasureDetails(props) {
                         <InputLabel style={{ width: "100%" }}> Savings potential: </InputLabel>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 onChange={e => setSavingsHD0(parseInt(e.target.value))}
                                 label="HD0" value={savingsHD0}
                                 fullWidth
@@ -635,7 +675,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 value={savingsHD1}
                                 onChange={e => setSavingsHD1(parseInt(e.target.value))}
                                 label="HD1"
@@ -645,7 +685,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 value={savingsHD2}
                                 onChange={e => setSavingsHD2(parseInt(e.target.value))}
                                 label="HD2"
@@ -655,7 +695,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 value={savingsHD3}
                                 onChange={e => setSavingsHD3(parseInt(e.target.value))}
                                 label="HD3"
@@ -665,7 +705,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 value={savingsHD4}
                                 onChange={e => setSavingsHD4(parseInt(e.target.value))}
                                 label="HD4"
@@ -675,7 +715,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 onChange={e => setSavingsHD5(parseInt(e.target.value))}
                                 value={savingsHD5}
                                 label="HD5"
@@ -691,7 +731,7 @@ export default function MeasureDetails(props) {
                         <InputLabel style={{ width: "100%" }}> Overruns: </InputLabel>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 onChange={e => setOverrunsHD0(parseInt(e.target.value))}
                                 label="HD0"
                                 value={overrunsHD0}
@@ -702,7 +742,7 @@ export default function MeasureDetails(props) {
 
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 onChange={e => setOverrunsHD1(parseInt(e.target.value))}
                                 label="HD1"
                                 value={overrunsHD1}
@@ -712,7 +752,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 onChange={e => setOverrunsHD2(parseInt(e.target.value))}
                                 label="HD2"
                                 value={overrunsHD2}
@@ -722,7 +762,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 value={overrunsHD3}
                                 onChange={e => setOverrunsHD3(parseInt(e.target.value))}
                                 label="HD3"
@@ -732,7 +772,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 value={overrunsHD4}
                                 onChange={e => setOverrunsHD4(parseInt(e.target.value))}
                                 label="HD4"
@@ -742,7 +782,7 @@ export default function MeasureDetails(props) {
                         </Grid>
                         <Grid item xs={6} sm={6}>
                             <TextField
-                                required
+
                                 value={overrunsHD5}
                                 onChange={e => setOverrunsHD5(parseInt(e.target.value))}
                                 label="HD5"
@@ -753,10 +793,10 @@ export default function MeasureDetails(props) {
                     </Grid>
 
                     {props.match && props.match.params && props.match.params.id ?
-                        <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary" onClick={() => { handleMeasureDetailUpdate(props.match.params.id) }}>
+                        <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary" disabled={!measureName} onClick={() => { handleMeasureDetailUpdate(props.match.params.id) }}>
                             Update
      </Button> :
-                        <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary" onClick={handleMeasureDetailSave}>
+                        <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="contained" color="primary" onClick={handleMeasureDetailSave} disabled={!measureName}>
                             Save
       </Button>}
 
@@ -765,11 +805,16 @@ export default function MeasureDetails(props) {
 
                 </React.Fragment>
             </TabPanel >
-            <TabPanel value={value} index={1}>
-                Test
-      </TabPanel>
 
 
-        </div >
+        </div >: isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
+               Your account has been temporarily deactivated, please contact your administrator.
+                
+         </Typography>
+                   :
+                   <Typography variant="h6" className={classes.title}>
+                         You have not been assigned customers at the moment, please contact your administrator.
+         </Typography>
+           }</div>
     );
 }

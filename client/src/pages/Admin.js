@@ -237,7 +237,7 @@ function Measures() {
             window.location.href = "/signin"
             return
         }
-        if (localStorage.getItem('emailId') && localStorage.getItem('isAdmin') == true) {
+        if (localStorage.getItem('emailId') && localStorage.getItem('isAdmin') == 'true') {
             setAdmin(true)
         }
 

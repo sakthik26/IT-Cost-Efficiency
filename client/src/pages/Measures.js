@@ -150,7 +150,7 @@ function Measures() {
             window.location.href = "/signin"
             return
         }
-        if (localStorage.getItem('emailId') && localStorage.getItem('isAdmin') == true) {
+        if (localStorage.getItem('emailId') && localStorage.getItem('isAdmin') == 'true') {
             setAdmin(true)
         }
         fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
@@ -159,7 +159,7 @@ function Measures() {
         })
             .then(res => res.json())
             .then(data => {
-                console.log(data)
+                
                 setRows(data);
                 setCustomerName(data[0].customer)
             })
@@ -183,8 +183,8 @@ function Measures() {
             {isAdmin == false && localStorage.getItem('isActive') == "true" ?
                 <div>
 
-                    <Button style={{ marginLeft: "10px", marginTop: "10px", display: "block" }} variant="outlined" color="primary" onClick={() => { history.push('/measuredetails') }}>
-                        Add Measures
+                    <Button style={{ margin: "10px 10px", display: "block" }} variant="outlined" color="primary" onClick={() => { history.push('/measuredetails') }}>
+                        Create Measure
       </Button>
                     <MaterialTable
                         icons={tableIcons}

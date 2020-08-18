@@ -13,6 +13,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from 'axios';
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
@@ -53,7 +55,7 @@ export default function SignIn() {
     const classes = useStyles();
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
-
+    const [open, setOpen] = React.useState(false);
     const handleInputEmailChange = (e) => {
         setEmail(e.target.value)
     }
@@ -79,14 +81,27 @@ export default function SignIn() {
                     window.location.href = '/landing';
             })
             .catch(function (e) {
-                console.log(e);
+                setOpen(true)
+                // console.log(e);
             }, 600);
     }
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
 
 
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error">
+                    Invalid email or password. Please check the credentials
+        </Alert>
+            </Snackbar>
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
