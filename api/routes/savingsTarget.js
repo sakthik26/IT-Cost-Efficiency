@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const SavingsTarget = require("../models/savingsTarget");
 const Customer = require("../models/customer");
+var ObjectId = require('mongodb').ObjectID;
 
 
 // Gets all the savings target
@@ -41,16 +42,35 @@ router.get('/', async (req, res) => {
     });
 });*/
 
-// Update savings target based on customer name
-router.put('/:customerId', async (req, res) => {
+// Update savings target based on customerId
+router.put('/', async (req, res) => {
   var objForUpdate = {};
+  let customerId = req.query.customer;
+  let objId = new ObjectId(req.query.customer);
+  let newYear = req.body.year;
+  console.log('customer here' + objId)
   if (req.body.customer) objForUpdate.customer = req.body.customer;
-  if (req.body.year) objForUpdate.year = req.body.year;
   if (req.body.description) objForUpdate.description = req.body.description;
+
+  const oldSavingsTargetData = await SavingsTarget.findOne({ customerId: objId })
+  console.log('old-savingsyear-' + oldSavingsTargetData);
+  var isNewObj = false
+  if(newYear!=null) {
+  for (var i = 0; i < newYear.length; i++) {
+    isNewObj = false
+    for (var j = 0; j < oldSavingsTargetData.year.length; j++) {
+      if (oldSavingsTargetData.year[j].year == newYear[i].year) {
+        oldSavingsTargetData.year[j].totalCost= parseInt(newYear[i].totalCost)
+        isNewObj = true
+      }
+    }
+  }
+}
+  objForUpdate.year = oldSavingsTargetData.year;
 
   try {
     const updatedSavingsTarget = await SavingsTarget.findOneAndUpdate(
-      { customerId: req.params.customerId },
+      { customerId: objId },
       {
         $set: objForUpdate
       }
