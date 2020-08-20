@@ -72,6 +72,7 @@ import PersonIcon from '@material-ui/icons/Person';
 import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
 import clsx from 'clsx';
+import logo from '../assets/capgemini_logo.png'
 const drawerWidth = 240;
 //simple dialog imports - end
 
@@ -211,8 +212,9 @@ function Navbar() {
                             <MenuIcon />
                         </IconButton>}
                     <Typography variant="h6" className={classes.title}>
-                        IT Cost Efficiency
+                        Capgemini IT Cost Efficiency
         </Typography>
+                    <img style={{ width: '40px', marginRight: '10px' }} src={logo} alt="logo" />
                     {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
                     {window.location.pathname === '/' || window.location.pathname === '/signin' ? null :
                         <Button color="inherit" onClick={logOut}>Logout</Button>}

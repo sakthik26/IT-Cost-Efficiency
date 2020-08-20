@@ -46,14 +46,15 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import { checkServerIdentity } from 'tls';
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 //simple dialog imports - end
 const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
-        marginTop: '100px'
+        marginTop: '100px',
+        marginLeft:'40px'
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -78,6 +79,15 @@ const useStyles = makeStyles(theme => ({
         marginTop: 100,
         width: '1000px !important',
         height: '600px !important',
+    },
+    clientDetails: {
+        /* float: right; */
+        display: 'flex',
+        /* float: right; */
+        flexDirection: 'row-reverse',
+        /* position: relative; */
+        margin: '0px 30px 0px 0px',
+        alignItems: 'center'
     },
 }));
 
@@ -354,6 +364,18 @@ function Settings() {
             .catch(function (e) {
                 console.log(e);
             });
+
+            fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                
+                setRows(data);
+                setCustomerName(data[0].customer)
+            })
+            .catch(error => console.log(error));
     }, []); const classes = useStyles();
 
 
@@ -483,14 +505,7 @@ function Settings() {
         { title: '2028', field: '2029' },
         { title: '2029', field: '2029' }]);
     }
-
-    const changeCustomerName = (e) => {
-        setCustomerName(e.target.value)
-    }
-
-    const changeCustomerDepartment = (e) => {
-        setCustomerDepartment(e.target.value)
-    }
+  
     return (
 
         <div className={classes.root}>
@@ -499,7 +514,17 @@ function Settings() {
                     Please enter values for all the fields
         </Alert>
             </Snackbar>
-            {isAdmin == false && localStorage.getItem('isActive') == "true" ?
+        
+            {rows.length > 0 && isAdmin == false && localStorage.getItem('isActive') == "true" ?
+            <div>
+                    
+            <Typography variant="h6" className={classes.title}>
+                     Savings Distribution </Typography>
+                <div className={classes.clientDetails}>
+            {customerName}
+            <AssignmentIndIcon fontSize='medium' />
+
+        </div>
                 <div className={classes.chart}>
                     <Bar
                         redraw
@@ -517,7 +542,11 @@ function Settings() {
                                     stacked: true,
                                     gridLines: {
                                         display: false,
-                                    }
+                                    },
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Year'
+                                      }
                                 }],
                                 yAxes: [{
                                     stacked: true,
@@ -525,6 +554,10 @@ function Settings() {
                                         beginAtZero: true,
                                     },
                                     type: 'linear',
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Savings (in Euros)'
+                                      }
                                 }]
                             },
                             responsive: true,
@@ -532,7 +565,7 @@ function Settings() {
                             legend: { position: 'bottom' },
                         }}
                     />
-                </div> : isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
+                </div> </div>: isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
                 Your account has been temporarily deactivated, please contact your administrator.
                  
           </Typography>

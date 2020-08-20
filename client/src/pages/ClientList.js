@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import axios from 'axios';
 import Select from '@material-ui/core/Select';
-
+import PeopleAltIcon from '@material-ui/icons/PeopleAlt';
 
 // simple dialog imports
 
@@ -35,13 +35,15 @@ import TextField from '@material-ui/core/TextField';
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
-        marginTop: '100px'
+        marginTop: '100px',
+        marginLeft: '40px'
     },
     menuButton: {
         marginRight: theme.spacing(2),
     },
     title: {
         flexGrow: 1,
+        marginLeft:'15px'
     },
     formControl: {
         margin: theme.spacing(1),
@@ -56,6 +58,9 @@ const useStyles = makeStyles(theme => ({
     table: {
         minWidth: 650,
     },
+    pageTitle:{
+        display:'flex'
+    }
 }));
 
 function ClientList() {
@@ -74,6 +79,7 @@ function ClientList() {
 
     const [customerName, setCustomerName] = React.useState('');
     const [customerDepartment, setCustomerDepartment] = React.useState('');
+    const [rows, setRows] = React.useState([]);
     const handleCustomerChange = (event) => {
         setCustomers(event.target.value);
     };
@@ -92,11 +98,14 @@ function ClientList() {
         setConsultant(event.target.value);
     };
 
-    const changeCustomerSelected = (event) => {
-        setSelectedCustomer(event.target.value)
-        localStorage.setItem('customerId', event.target.value)
+    const changeCustomer = (event) => {
+        localStorage.setItem('customerId', selectedCustomer)
         setOpen(true);
     }
+    const changeCustomerSelected = (event) => {
+        setSelectedCustomer(event.target.value)
+    }
+
 
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
@@ -150,6 +159,18 @@ function ClientList() {
             .catch(function (e) {
                 console.log(e);
             });
+
+            fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                
+                setRows(data);
+               
+            })
+            .catch(error => console.log(error));
     }, []); const classes = useStyles();
 
 
@@ -273,8 +294,17 @@ function ClientList() {
                     Customer has been Modified. Navigate to the User Dashboard to view selected customer measures.
         </Alert>
             </Snackbar>
-            {isAdmin == false && localStorage.getItem('isActive') == "true" ?
+            
+            {rows.length>0 && isAdmin == false && localStorage.getItem('isActive') == "true" ?
                 <div>
+                    <div>
+                <div className = {classes.pageTitle}>
+                <PeopleAltIcon fontSize='large' />
+                <Typography variant="h6" className={classes.title}>
+                       Assigned Clients</Typography>
+                </div>
+      
+            </div>
                     <FormControl className={classes.formControl}>
                         <InputLabel id="demo-simple-select-label">Select Customer</InputLabel>
                         <Select
@@ -293,6 +323,9 @@ function ClientList() {
                             )}
                         </Select>
                     </FormControl>
+                    <Button style={{ marginLeft: "10px",    marginTop: "20px"}} variant="contained" color="primary" onClick={() =>  changeCustomer() }>
+                            Change
+     </Button>
                 </div>
                 : isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
                     Your account has been temporarily deactivated, please contact your administrator.

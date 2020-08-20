@@ -81,6 +81,7 @@ const useStyles = makeStyles(theme => ({
     },
     title: {
         flexGrow: 1,
+        marginLeft:'40px'
     },
     formControl: {
         margin: theme.spacing(1),
@@ -169,20 +170,20 @@ function Measures() {
 
     return (
         <div className={classes.root}>
-            <div className={classes.clientDetails}>
-                {customerName}
-                <AssignmentIndIcon fontSize='medium' />
-
-            </div>
+            
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error">
                     Please enter values for all the fields
         </Alert>
             </Snackbar>
             {/* {rows.length > 0 && isAdmin == false && localStorage.getItem('isActive') == "true" ? */}
-            {isAdmin == false && localStorage.getItem('isActive') == "true" ?
+            {rows.length > 0 && isAdmin == false && localStorage.getItem('isActive') == "true" ?
                 <div>
+<div className={classes.clientDetails}>
+                {customerName}
+                <AssignmentIndIcon fontSize='medium' />
 
+            </div>
                     <Button style={{ margin: "10px 10px", display: "block" }} variant="outlined" color="primary" onClick={() => { history.push('/measuredetails') }}>
                         Create Measure
       </Button>

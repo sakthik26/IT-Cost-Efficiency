@@ -25,10 +25,11 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { useEffect } from 'react';
-import logo from '../assets/logo.jpg'
+
 import Alert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import DateFnsUtils from '@date-io/date-fns';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import {
     MuiPickersUtilsProvider,
     KeyboardTimePicker,
@@ -40,7 +41,7 @@ const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
         backgroundColor: theme.palette.background.paper,
-        marginTop: '100px'
+        marginTop: '80px'
     },
     dropdownWidth: {
         width: '100%'
@@ -51,7 +52,16 @@ const useStyles = makeStyles(theme => ({
     margin: {
         marginTop: '10px',
         marginBottom: '10px',
-    }
+    },
+    clientDetails: {
+        /* float: right; */
+        display: 'flex',
+        /* float: right; */
+        flexDirection: 'row-reverse',
+        /* position: relative; */
+        margin: '0px 30px 0px 0px',
+        alignItems: 'center'
+    },
 }));
 
 
@@ -115,6 +125,7 @@ export default function MeasureDetails(props) {
     const [measureDescription, setMeasureDescription] = React.useState('');
     const [currency, setCurrency] = React.useState('Euros');
     const currencies = ['Euros', 'US Dollars', 'Singapore Dollars', 'Yen']
+    const [customerName, setCustomerName] = React.useState('');
     const handleCurrencyChange = (event) => {
         setCurrency(event.target.value);
     };
@@ -257,6 +268,18 @@ export default function MeasureDetails(props) {
             fetchData();
 
         }
+
+        fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                
+             
+                setCustomerName(data[0].customer)
+            })
+            .catch(error => console.log(error));
     }, props)
 
 
@@ -390,6 +413,11 @@ export default function MeasureDetails(props) {
         <div className={classes.root}>
        {isAdmin == false && localStorage.getItem('isActive') == "true" ?
        <div>
+           <div className={classes.clientDetails}>
+                {customerName}
+                <AssignmentIndIcon fontSize='medium' />
+
+            </div>
             <Typography variant="h5" className={classes.margin} style={{
                 paddingLeft: '10px'
             }}>
@@ -406,12 +434,13 @@ export default function MeasureDetails(props) {
                     Measure updated successfully.
         </Alert>
             </Snackbar>
+            
             <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
                 <Tab label="New Measure" {...a11yProps(0)} />
                 <Tab label="All Measures" {...a11yProps(1)} />
 
             </Tabs>
-            <img style={{ width: '50px', position: 'absolute', right: '0px', top: '65px' }} src={logo} alt="logo" />
+            {/* <img style={{ width: '50px', position: 'absolute', right: '0px', top: '65px' }} src={logo} alt="logo" /> */}
 
             <TabPanel value={value} index={0}>
 

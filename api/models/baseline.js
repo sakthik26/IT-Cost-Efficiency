@@ -14,7 +14,8 @@ const baselineSchema = new mongoose.Schema({
     [{
       totalCost: Number,
       year: Number,
-      _id: false
+      _id: false,
+      default: 0
     }],
   description: {
     type: String

@@ -72,8 +72,10 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import ListIcon from '@material-ui/icons/List';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Drawer from '@material-ui/core/Drawer';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import clsx from 'clsx';
 const drawerWidth = 240;
+
 //simple dialog imports - end
 
 
@@ -245,7 +247,7 @@ function Settings() {
                                 <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
                                     Client List
           </Typography><Typography variant="body2" color="textSecondary" component="p">
-                                    Client List associated with your account
+                                    Clients associated with your account
           </Typography>
 
                             </CardContent>
@@ -269,7 +271,7 @@ function Settings() {
                                 <Typography className={classes.alignCenter} gutterBottom variant="h5" component="h2">
                                     Client Dashboard
           </Typography><Typography variant="body2" color="textSecondary" component="p">
-                                    Hardness Levels for a chosen client
+                                    Displays Savings distribution for the chosen client
           </Typography>
 
                             </CardContent>
@@ -294,7 +296,7 @@ function Settings() {
                                     Measures
           </Typography>
                                 <Typography variant="body2" color="textSecondary" component="p">
-                                    List of Client Measures associtated with a chosen client
+                                    List of Measures associtated with a chosen client
           </Typography>
                             </CardContent>
                         </CardActionArea>

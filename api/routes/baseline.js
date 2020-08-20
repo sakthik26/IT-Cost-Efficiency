@@ -39,16 +39,37 @@ router.get('/', async (req, res) => {
     });
 });*/
 
-// Update baseline based on customer name
-router.put('/:customerId', async (req, res) => {
+// Update baseline based on customerId
+router.put('/', async (req, res) => {
   var objForUpdate = {};
+  let customerId = req.query.customer;
+  let objId = new ObjectId(req.query.customer);
+  let newYear = req.body.year;
+  console.log('customer here' + objId)
   if (req.body.customer) objForUpdate.customer = req.body.customer;
-  if (req.body.year) objForUpdate.year = req.body.year;
   if (req.body.description) objForUpdate.description = req.body.description;
+
+
+  const oldBaselineData = await Baseline.findOne({ customerId: objId })
+  console.log('old-baselineyear-' + oldBaselineData);
+  var isNewObj = false
+  if (newYear != null) {
+    for (var i = 0; i < newYear.length; i++) {
+      isNewObj = false
+      for (var j = 0; j < oldBaselineData.year.length; j++) {
+        if (oldBaselineData.year[j].year == newYear[i].year) {
+          oldBaselineData.year[j].totalCost = parseInt(newYear[i].totalCost)
+          isNewObj = true
+        }
+      }
+    }
+  }
+  objForUpdate.year = oldBaselineData.year;
+
 
   try {
     const updatedBaseline = await Baseline.findOneAndUpdate(
-      { customerId: req.params.customerId },
+      { customerId: objId },
       {
         $set: objForUpdate
       }
@@ -62,6 +83,5 @@ router.put('/:customerId', async (req, res) => {
     res.json({ message: err });
   }
 });
-
 
 module.exports = router;

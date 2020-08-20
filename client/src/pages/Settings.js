@@ -45,7 +45,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 //simple dialog imports - end
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -90,6 +90,15 @@ const useStyles = makeStyles(theme => ({
     },
     table: {
         minWidth: 650,
+    },
+    clientDetails: {
+        /* float: right; */
+        display: 'flex',
+        /* float: right; */
+        flexDirection: 'row-reverse',
+        /* position: relative; */
+        margin: '100px 30px 0px 0px',
+        alignItems: 'center'
     },
 }));
 
@@ -148,8 +157,8 @@ function Settings() {
 
     const [rows, setRows] = React.useState([]);
     const [savingsCostTypeRows, setSavingsCostTypeRows] = React.useState([]);
-    const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: 0, 2021: 0, 2022: 0, 2023: 0, 2024: 0,2025: 0, 2026: 0, 2027: 0, 2028: 0, 2029: 0 }]);
-    const [savingsTotalCostRows, setSavingsTotalCostRows] = React.useState([{ 2020: 0, 2021: 0, 2022: 0, 2023: 0, 2024: 0,2025: 0, 2026: 0, 2027: 0, 2028: 0, 2029: 0 }]);
+    const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: null, 2021: null, 2022: null, 2023: null, 2024: null,2025: null, 2026: null, 2027: null, 2028: null, 2029: null }]);
+    const [savingsTotalCostRows, setSavingsTotalCostRows] = React.useState([{ 2020: null, 2021: null, 2022: null, 2023: null, 2024: null,2025: null, 2026: null, 2027: null, 2028: null, 2029: null }]);
     const [isAdmin, setAdmin] = React.useState(false);
 
     const [open, setOpen] = React.useState(false);
@@ -220,7 +229,7 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
                 // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
                 var savingsRows = {}
                 var savingsData = []
-                for (var i = 0; i < data[0] && data[0].year.length; i++) {
+                for (var i = 0 && data[0] ;i <data[0].year.length; i++) {
 
                     savingsRows[data[0].year[i].year] = data[0].year[i].totalCost
                 }
@@ -268,6 +277,17 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
             })
             .catch(error => console.log(error));
 
+            fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                
+             
+                setCustomerName(data[0].customer)
+            })
+            .catch(error => console.log(error));
         fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=savings', {
             method: 'GET',
             headers: { 'x-access-token': localStorage.getItem('token') || '' }
@@ -317,7 +337,7 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
     }, []); const classes = useStyles();
 
 
-
+    const [customerName, setCustomerName] = React.useState('');
     const handleBaselineColumns = (event) => {
         setBaselineColumns(columns => [...columns, { title: '2025(€)', field: '2025' },
         { title: '2026(€)', field: '2026' },
@@ -364,6 +384,11 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
             </Snackbar>
             {isAdmin == false && localStorage.getItem('isActive') == "true" ?
                 <div>
+                    <div className={classes.clientDetails}>
+            {customerName}
+            <AssignmentIndIcon fontSize='medium' />
+
+        </div>
                     <Typography style={{ marginLeft: "20px" }}>
                         <h2> Targets & Baseline </h2>
                     </Typography>
@@ -387,15 +412,28 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
                             onRowUpdate: (newData, oldData) =>
                                 new Promise(resolve => {
                                     setTimeout(() => {
-                                        newData.customerId = localStorage.getItem('customerId') + ''
+                                        var costYearAmount = {}
+                                        var baselineTotalItCost = {}
+                                        var baselineTotalItCostYear = []
+                                        var baselinePayload = {}
+                                        for (var i in newData) {
+                                            costYearAmount = {}
+                                            costYearAmount['year'] = parseInt(i)
+                                            costYearAmount['totalCost'] = parseInt(newData[i])
+                                            baselineTotalItCostYear.push(costYearAmount)
+                                        }
+                                        baselinePayload.year = baselineTotalItCostYear
                                         resolve();
                                         axios
-                                            .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+                                            .put("http://localhost:4000/baseline?customer=" + localStorage.getItem('customerId'), baselinePayload, {
                                                 headers: { 'x-access-token': localStorage.getItem('token') }
                                             })
                                             .then((response) => {
-                                                setRows(prevState => {
+                                                setBaselineTotalCostRows(prevState => {
                                                     const data = [...prevState];
+                                                    console.log('data' + data)
+                                                    console.log(newData)
+
                                                     data[data.indexOf(oldData)] = newData;
                                                     return data;
                                                 })
@@ -423,7 +461,7 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
                                 new Promise((resolve, reject) => {
                                    
                                     setTimeout(() => {
-                                        console.log(newData)
+                                       
                                         var costTypeYearAmount = {}
                                         var costTypeYearAmountData = []
                                         var costTypePayload = {}
@@ -558,15 +596,28 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
                             onRowUpdate: (newData, oldData) =>
                                 new Promise(resolve => {
                                     setTimeout(() => {
-                                        newData.customerId = localStorage.getItem('customerId') + ''
+                                        
+                                        var savingsTotalItCost = {}
+                                        var savingsTotalItCostYear = []
+                                        var savingsPayload = {}
+                                        for (var i in newData) {
+                                            savingsTotalItCost = {}
+                                            savingsTotalItCost['year'] = parseInt(i)
+                                            savingsTotalItCost['totalCost'] = parseInt(newData[i])
+                                            savingsTotalItCostYear.push(savingsTotalItCost)
+                                        }
+                                        savingsPayload.year = savingsTotalItCostYear
                                         resolve();
                                         axios
-                                            .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+                                            .put("http://localhost:4000/savingsTarget?customer=" + localStorage.getItem('customerId'), savingsPayload, {
                                                 headers: { 'x-access-token': localStorage.getItem('token') }
                                             })
                                             .then((response) => {
-                                                setRows(prevState => {
+                                                setSavingsTotalCostRows(prevState => {
                                                     const data = [...prevState];
+                                                    console.log('data' + data)
+                                                    console.log(newData)
+
                                                     data[data.indexOf(oldData)] = newData;
                                                     return data;
                                                 })
@@ -575,7 +626,6 @@ fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('cu
                                                 console.log(e);
                                             }, 600);
                                     })
-
                                 }),
 
                         }}
