@@ -11,7 +11,7 @@ router.get('/', auth, async (req, res) => {
   //res.send('it works')
   let userId = req.query.id
   let customerId = req.query.customer
-  console.log('hereIam' + userId)
+
   if (userId) {
     UserRight.find({ userId: userId }).populate('userId').exec(function (err, user) {
       if (err) throw err;
@@ -19,13 +19,13 @@ router.get('/', auth, async (req, res) => {
         if (!user[0]) {
           return
         }
-        console.log('Testing here')
+
         let objId = new ObjectId(req.query.customer);
-        console.log(objId)
+
         var customerId = user[0].customerId
         for (var i = 0; i < user.length; i++) {
           if (user[i].customerId.equals(objId)) {
-            console.log(user[i].customerId.equals(objId) + ' ' + user[i].customerId)
+
 
             customerId = user[i].customerId
             break;

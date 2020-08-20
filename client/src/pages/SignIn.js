@@ -13,12 +13,14 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import axios from 'axios';
+import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 function Copyright() {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://material-ui.com/">
-                Your Website
+                IT Cost Efficiency
       </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -32,6 +34,9 @@ const useStyles = makeStyles((theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+    },
+    formInput: {
+        marginBottom: '10px'
     },
     avatar: {
         margin: theme.spacing(1),
@@ -50,7 +55,7 @@ export default function SignIn() {
     const classes = useStyles();
     const [email, setEmail] = React.useState("");
     const [password, setPassword] = React.useState("");
-
+    const [open, setOpen] = React.useState(false);
     const handleInputEmailChange = (e) => {
         setEmail(e.target.value)
     }
@@ -66,20 +71,37 @@ export default function SignIn() {
                 localStorage.setItem('id', response.data.id)
                 localStorage.setItem('customerId', response.data.customerId)
                 localStorage.setItem('isActive', response.data.isActive)
+                localStorage.setItem('isAdmin', response.data.isAdmin)
                 if (response.data.email) {
                     localStorage.setItem('emailId', response.data.email)
                 }
-                window.location.href = '/measures';
+                if (response.data.isAdmin == true)
+                    window.location.href = "/admin"
+                else
+                    window.location.href = '/landing';
             })
             .catch(function (e) {
-                console.log(e);
+                setOpen(true)
+                // console.log(e);
             }, 600);
     }
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
 
 
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error">
+                    Invalid email or password. Please check the credentials
+        </Alert>
+            </Snackbar>
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
                     <LockOutlinedIcon />
@@ -91,6 +113,7 @@ export default function SignIn() {
                     <Grid item xs={12}>
                         <TextField
                             variant="outlined"
+                            className={classes.formInput}
                             required
                             fullWidth
                             id="email"
@@ -100,6 +123,7 @@ export default function SignIn() {
                             autoComplete="email"
                         />
                     </Grid>
+
                     <Grid item xs={12}>
                         <TextField
                             variant="outlined"
@@ -113,10 +137,10 @@ export default function SignIn() {
                             autoComplete="current-password"
                         />
                     </Grid>
-                    <FormControlLabel
+                    {/* <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
                         label="Remember me"
-                    />
+                    /> */}
                     <Button
                         onClick={handleSignIn}
                         fullWidth
@@ -127,11 +151,6 @@ export default function SignIn() {
                         Sign In
           </Button>
                     <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-              </Link>
-                        </Grid>
                         <Grid item>
                             <Link href="/" variant="body2">
                                 {"Don't have an account? Sign Up"}

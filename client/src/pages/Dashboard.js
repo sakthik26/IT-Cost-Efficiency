@@ -46,32 +46,15 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
 import { checkServerIdentity } from 'tls';
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 //simple dialog imports - end
-const tableIcons = {
-    Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
-    Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-    Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-    DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-    Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-    Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-    FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-    LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-    NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-    PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-    ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-    Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-    SortArrow: forwardRef((props, ref) => <ArrowDownward {...props} ref={ref} />),
-    ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-    ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
-
+const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
     root: {
         flexGrow: 1,
+        marginTop: '100px',
+        marginLeft:'40px'
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -97,6 +80,15 @@ const useStyles = makeStyles(theme => ({
         width: '1000px !important',
         height: '600px !important',
     },
+    clientDetails: {
+        /* float: right; */
+        display: 'flex',
+        /* float: right; */
+        flexDirection: 'row-reverse',
+        /* position: relative; */
+        margin: '0px 30px 0px 0px',
+        alignItems: 'center'
+    },
 }));
 
 function Settings() {
@@ -108,29 +100,29 @@ function Settings() {
         labels: ["2020", "2021", "2022", "2023", "2024", "2025"],
         datasets: [{
             label: 'HD0',
-            backgroundColor: "#caf270",
+            backgroundColor: "#747474",
             data: []
         }, {
             label: 'HD1',
-            backgroundColor: "#45c490",
+            backgroundColor: "#ba962b",
             data: []
         }, {
             label: 'HD2',
-            backgroundColor: "#008d93",
+            backgroundColor: "#dfd937",
             data: []
         }, {
             label: 'HD3',
-            backgroundColor: "#2e5468",
+            backgroundColor: "#02bb71",
             data: []
         },
         {
             label: 'HD4',
-            backgroundColor: "#a89d32",
+            backgroundColor: "#518a59",
             data: []
         },
         {
             label: 'HD5',
-            backgroundColor: "#3789bd",
+            backgroundColor: "#178b15",
             data: []
         }]
     })
@@ -372,6 +364,18 @@ function Settings() {
             .catch(function (e) {
                 console.log(e);
             });
+
+            fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                
+                setRows(data);
+                setCustomerName(data[0].customer)
+            })
+            .catch(error => console.log(error));
     }, []); const classes = useStyles();
 
 
@@ -501,67 +505,75 @@ function Settings() {
         { title: '2028', field: '2029' },
         { title: '2029', field: '2029' }]);
     }
-
-    const changeCustomerName = (e) => {
-        setCustomerName(e.target.value)
-    }
-
-    const changeCustomerDepartment = (e) => {
-        setCustomerDepartment(e.target.value)
-    }
+  
     return (
-        <div className={classes.root}>
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        IT Cost Efficiency
-        </Typography>
-                    {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
-                    <Button color="inherit" onClick={logOut}>Logout</Button>
-                </Toolbar>
 
-            </AppBar>
+        <div className={classes.root}>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error">
                     Please enter values for all the fields
         </Alert>
             </Snackbar>
-            <div className={classes.chart}>
-                <Bar
-                    redraw
-                    data={cState}
-                    options={{
-                        tooltips: {
-                            displayColors: true,
-                            callbacks: {
-                                mode: 'x',
-                            },
-                        },
-                        scales: {
-                            xAxes: [{
-                                barPercentage: 0.7,
-                                stacked: true,
-                                gridLines: {
-                                    display: false,
-                                }
-                            }],
-                            yAxes: [{
-                                stacked: true,
-                                ticks: {
-                                    beginAtZero: true,
+        
+            {rows.length > 0 && isAdmin == false && localStorage.getItem('isActive') == "true" ?
+            <div>
+                    
+            <Typography variant="h6" className={classes.title}>
+                     Savings Distribution </Typography>
+                <div className={classes.clientDetails}>
+            {customerName}
+            <AssignmentIndIcon fontSize='medium' />
+
+        </div>
+                <div className={classes.chart}>
+                    <Bar
+                        redraw
+                        data={cState}
+                        options={{
+                            tooltips: {
+                                displayColors: true,
+                                callbacks: {
+                                    mode: 'x',
                                 },
-                                type: 'linear',
-                            }]
-                        },
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        legend: { position: 'bottom' },
-                    }}
-                />
-            </div>
+                            },
+                            scales: {
+                                xAxes: [{
+                                    barPercentage: 0.7,
+                                    stacked: true,
+                                    gridLines: {
+                                        display: false,
+                                    },
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Year'
+                                      }
+                                }],
+                                yAxes: [{
+                                    stacked: true,
+                                    ticks: {
+                                        beginAtZero: true,
+                                    },
+                                    type: 'linear',
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: 'Savings (in Euros)'
+                                      }
+                                }]
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            legend: { position: 'bottom' },
+                        }}
+                    />
+                </div> </div>: isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
+                Your account has been temporarily deactivated, please contact your administrator.
+                 
+          </Typography>
+                    :
+                    <Typography variant="h6" className={classes.title}>
+                          You have not been assigned customers at the moment, please contact your administrator.
+          </Typography>
+            }
         </div>
     );
 }

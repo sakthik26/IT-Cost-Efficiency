@@ -10,7 +10,8 @@ const jwt = require("jsonwebtoken");
 const config = require("config");
 //sign in
 router.get("/current", auth, async (req, res) => {
-    const user = await User.findById(req.user._id).select("-password");
+    let userId = req.query.id
+    const user = await User.findById(userId)
     res.send(user);
 });
 
@@ -54,6 +55,7 @@ router.post('/login', async (req, res) => {
                     id: user.id,
                     email: user.email,
                     isActive: user.isActive,
+                    isAdmin: user.isAdmin,
                     customerId: userRight !== null ? userRight.customerId : null,
                     token: token
                 });
@@ -104,7 +106,7 @@ router.put('/:email', async (req, res) => {
             { email: req.params.email },
             {
                 $set: {
-                    name: req.body.name, email: req.body.email, isActive: req.body.isActive
+                    email: req.body.email, isActive: req.body.isActive
                 }
             }
         )

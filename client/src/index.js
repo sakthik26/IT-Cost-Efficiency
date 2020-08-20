@@ -1,28 +1,45 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import { Route, Link, BrowserRouter as Router } from 'react-router-dom'
+import { Route, Link, BrowserRouter as Router, Switch } from 'react-router-dom'
 import App from './App';
 import { Provider } from 'react-redux'
 import configureStore from './store'
+
 import * as serviceWorker from './serviceWorker';
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
 import Settings from './pages/Settings'
 import MeasureDetails from './pages/MeasureDetails'
 import Dashboard from './pages/Dashboard'
+import LandingPage from './pages/LandingPage'
+import Measures from './pages/Measures'
+import Navbar from './components/Navbar'
+import ClientList from './pages/ClientList'
+import Admin from './pages/Admin'
+
 const routing = (
   <Router>
     <Provider store={configureStore()}>
       <div>
-        <Route exact path="/measures" component={App} />
-        <Route exact path="/" component={SignUp} />
-        <Route exact path="/signin" component={SignIn} />
-        <Route exact path="/settings" component={Settings} />
-        <Route exact path="/measuredetails/:id" component={MeasureDetails} />
-        <Route exact path="/measuredetails" component={MeasureDetails} />
-        <Route exact path="/dashboard" component={Dashboard} />
+
+        <Navbar />
+        <Switch>
+          <Route path="/measures" component={Measures} />
+          <Route path="/signin" component={SignIn} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/measuredetails/:id" component={MeasureDetails} />
+          <Route path="/measuredetails" component={MeasureDetails} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/landing" component={LandingPage} />
+          <Route path="/clientlist" component={ClientList} />
+          <Route path="/admin" component={Admin} />
+
+          <Route exact path="/" component={SignUp} />
+        </Switch>
+
         {/* <Route exact path="/admin" component={Admin} /> */}
+
       </div>
     </Provider>
   </Router>

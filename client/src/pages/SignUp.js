@@ -18,7 +18,7 @@ function Copyright() {
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="https://material-ui.com/">
-
+                IT Cost Efficiency
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -69,7 +69,7 @@ export default function SignUp() {
             .then((response) => {
                 localStorage.setItem('token', response.data.token)
                 localStorage.setItem('id', response.data.id)
-                window.location.href = '/measures';
+                window.location.href = '/landing';
             })
             .catch(function (e) {
                 console.log(e);
@@ -138,12 +138,12 @@ export default function SignUp() {
                                 autoComplete="current-password"
                             />
                         </Grid>
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <FormControlLabel
                                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                                 label="I want to receive inspiration, marketing promotions and updates via email."
                             />
-                        </Grid>
+                        </Grid> */}
                     </Grid>
                     <Button
                         fullWidth

@@ -45,7 +45,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import TextField from '@material-ui/core/TextField';
-
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 //simple dialog imports - end
 const tableIcons = {
     Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -91,6 +91,15 @@ const useStyles = makeStyles(theme => ({
     table: {
         minWidth: 650,
     },
+    clientDetails: {
+        /* float: right; */
+        display: 'flex',
+        /* float: right; */
+        flexDirection: 'row-reverse',
+        /* position: relative; */
+        margin: '100px 30px 0px 0px',
+        alignItems: 'center'
+    },
 }));
 
 function Settings() {
@@ -103,6 +112,19 @@ function Settings() {
             { title: '2023(€)', field: '2023' },
             { title: '2024(€)', field: '2024' },
         ]);
+
+        //add for savings total here
+        const [savingsTotalCostColumns, setSavingsTotalCostColumns] = React.useState(
+            [
+                { title: 'Overall', field: 'overall' },
+                { title: '2020(€)', field: '2020', sorting: true },
+                { title: '2021(€)', field: '2021' },
+                { title: '2022(€)', field: '2022' },
+                { title: '2023(€)', field: '2023' },
+                { title: '2024(€)', field: '2024' },
+            ]);
+
+
     const [baselineColumns, setBaselineColumns] = React.useState(
         [
             { title: 'Cost Type', field: 'costType' },
@@ -135,96 +157,15 @@ function Settings() {
 
     const [rows, setRows] = React.useState([]);
     const [savingsCostTypeRows, setSavingsCostTypeRows] = React.useState([]);
-    const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
+    const [baselineTotalCostRows, setBaselineTotalCostRows] = React.useState([{ 2020: null, 2021: null, 2022: null, 2023: null, 2024: null,2025: null, 2026: null, 2027: null, 2028: null, 2029: null }]);
+    const [savingsTotalCostRows, setSavingsTotalCostRows] = React.useState([{ 2020: null, 2021: null, 2022: null, 2023: null, 2024: null,2025: null, 2026: null, 2027: null, 2028: null, 2029: null }]);
     const [isAdmin, setAdmin] = React.useState(false);
-    const [customers, setCustomers] = React.useState('');
-    const [customerOptions, setCustomerOptions] = React.useState([]);
-    const [consultant, setConsultant] = React.useState('');
-    const [consultantOptions, setConsultantOptions] = React.useState([]);
 
-
-    const [customersAssigned, setCustomersAssigned] = React.useState([]);
-    const [selectedCustomer, setSelectedCustomer] = React.useState('');
-    const [consultantAccess, setConsultantAccess] = React.useState([]);
-
-    const [customerName, setCustomerName] = React.useState('');
-    const [customerDepartment, setCustomerDepartment] = React.useState('');
-    const handleCustomerChange = (event) => {
-        setCustomers(event.target.value);
-    };
-
-    const handleCustomerToDeleteChange = (event) => {
-        setCustomerToDelete(event.target.value);
-    };
-    const handleConsultantToDeleteChange = (event) => {
-        setConsultantToDelete(event.target.value);
-    };
-
-    const handleConsultantToDeactivateChange = (event) => {
-        setConsultantToDeactivate(event.target.value);
-    };
-    const handleConsultantChange = (event) => {
-        setConsultant(event.target.value);
-    };
-
-    const changeCustomerSelected = (event) => {
-        setSelectedCustomer(event.target.value)
-        localStorage.setItem('customerId', event.target.value)
-        fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
-            method: 'GET',
-            headers: { 'x-access-token': localStorage.getItem('token') || '' }
-        })
-            .then(res => res.json())
-            .then(data => {
-                console.log(data)
-                setRows(data);
-            })
-            .catch(error => console.log(error));
-
-    }
-
-    const handleConsultant = (event) => {
-
-        // if (consultantAccess.map(consultant => consultant.email).indexOf(consultant) >= 0) {
-        //   alert('Consultant already assigned to the customer')
-        // }
-
-        for (var i = 0; i < consultantAccess.length; i++) {
-            if (consultantAccess[i].email == consultant && consultantAccess[i].customer == customers) {
-                alert('Consultant already assigned to the customer')
-                return
-            }
-        }
-        let payload = {
-            customer: customers,
-            email: consultant,
-            permission: "root",
-            permission_level: "1"
-        }
-
-        console.log(consultantAccess)
-
-        axios
-            .post("http://localhost:4000/userrights", payload, {
-            })
-            .then((response) => {
-                setConsultantAccess(consultantAccess => [...consultantAccess, response.data]);
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
     const [open, setOpen] = React.useState(false);
     const handleClick = () => {
         setOpen(true);
     };
-    const logOut = (event, reason) => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('id')
-        localStorage.removeItem('customerId')
-        window.location.href = '/signin'
-    };
+
     const handleClose = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -232,19 +173,7 @@ function Settings() {
 
         setOpen(false);
     };
-    const handleDelete = (email) => {
 
-        axios
-            .delete("http://localhost:4000/userrights/" + email, {
-            })
-            .then((response) => {
-                let consultants = consultantAccess.filter(consultant => consultant.email != email)
-                setConsultantAccess(consultants)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    };
 
 
     useEffect(() => {
@@ -255,9 +184,10 @@ function Settings() {
             window.location.href = "/signin"
             return
         }
-        if (localStorage.getItem('emailId') && localStorage.getItem('emailId') === 'admin@gmail.com') {
+        if (localStorage.getItem('emailId') && localStorage.getItem('isAdmin') == 'true') {
             setAdmin(true)
         }
+        if(localStorage.getItem('isActive') == "true"){
         fetch('http://localhost:4000/baseline?customer=' + localStorage.getItem('customerId'), {
             method: 'GET',
             headers: { 'x-access-token': localStorage.getItem('token') || '' }
@@ -271,20 +201,50 @@ function Settings() {
                 // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
                 var baselineRows = {}
                 var baselineData = []
-                for (var i = 0; i < data.length; i++) {
+                for (var i = 0;data[0] && i < data[0].year.length; i++) {
 
-                    baselineRows[data[i].year] = data[i].totalCost
+                    baselineRows[data[0].year[i].year] = data[0].year[i].totalCost
                 }
-                console.log(baselineRows)
+                console.log('here'+baselineRows)
 
                 baselineData.push(baselineRows)
-
+                console.log('here'+baselineData)
                 //console.log(costTypeData)
                 setBaselineTotalCostRows(baselineData);
                 // console.log(data)
                 // setRows(data);
             })
             .catch(error => console.log(error));
+
+fetch('http://localhost:4000/savingsTarget?customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+
+                // const [rows, setRows] = React.useState([{ costType: 'LAN', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Print', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 },
+                // { costType: 'Cables', 2020: 123213, 2021: 12353, 2022: 453445, 2023: 123234, 2024: 23234 }]);
+                var savingsRows = {}
+                var savingsData = []
+                for (var i = 0 && data[0] ;i <data[0].year.length; i++) {
+
+                    savingsRows[data[0].year[i].year] = data[0].year[i].totalCost
+                }
+                console.log('here'+savingsRows)
+
+                savingsData.push(savingsRows)
+                console.log('here'+savingsData)
+               
+                setSavingsTotalCostRows(savingsData);
+                
+            })
+            .catch(error => console.log(error));
+
+
+
         fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=baseline', {
             method: 'GET',
             headers: { 'x-access-token': localStorage.getItem('token') || '' }
@@ -307,26 +267,27 @@ function Settings() {
                     costType.sphereOfAction = data[i].sphereOfAction
                     costTypeData.push(costType)
                 }
-                // if (costTypes[data[i].costType]) {
-                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
-                // }
-                // else {
-                //     costTypes[data[i].costType] = {}
-                //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
-                // }
-                //}
-
-                // for (var i in costTypes) {
-                //     costTypes[i]['costType'] = i
-                //     costTypeData.push(costTypes[i])
-                // }
-                // console.log(costTypeData)
+                if(costTypeData.length == 0)
+                costTypeData.push({})
+              
                 setRows(costTypeData);
+              
                 // console.log(data)
                 // setRows(data);
             })
             .catch(error => console.log(error));
 
+            fetch('http://localhost:4000/measures?id=' + localStorage.getItem('id') + '&customer=' + localStorage.getItem('customerId'), {
+            method: 'GET',
+            headers: { 'x-access-token': localStorage.getItem('token') || '' }
+        })
+            .then(res => res.json())
+            .then(data => {
+                
+             
+                setCustomerName(data[0].customer)
+            })
+            .catch(error => console.log(error));
         fetch('http://localhost:4000/costtype?customer=' + localStorage.getItem('customerId') + '&type=savings', {
             method: 'GET',
             headers: { 'x-access-token': localStorage.getItem('token') || '' }
@@ -349,7 +310,8 @@ function Settings() {
                     costType.sphereOfAction = data[i].sphereOfAction
                     costTypeData.push(costType)
                 }
-
+                if(costTypeData.length == 0)
+                costTypeData.push({})
                 // if (costTypes[data[i].costType]) {
                 //     costTypes[data[i].costType][data[i].costTypeYear] = data[i].amount
                 // }
@@ -371,225 +333,62 @@ function Settings() {
             .catch(error => console.log(error));
 
 
-        axios
-            .get("http://localhost:4000/customers", {
-            })
-            .then((response) => {
-                setCustomerOptions(response.data.map((customer) => customer.customer));
-                // var customers = {}
-                // for (var i = 0; i < response.data.length; i++) {
-                //   customers[response.data[i].customer] = []
-                // }
-                // setConsultantAccess(customers)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-
-        axios
-            .get("http://localhost:4000/api/users ", {
-            })
-            .then((response) => {
-                setConsultantOptions(response.data.filter((consultant) => consultant.email != "admin@gmail.com").map((consultant) => consultant.email));
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-
-        axios
-            .get("http://localhost:4000/userrights", {
-            })
-            .then((response) => {
-                // setCustomerOptions(response.data.map((customer) => customer.customer));
-                // var customers = {}
-                // for (var i = 0; i < response.data.length; i++) {
-                //   customers[response.data[i].customer] = []
-                // }
-                setConsultantAccess(response.data)
-                setCustomersAssigned(response.data.filter((consultant) => consultant.email == localStorage.getItem('emailId')))
-
-                setSelectedCustomer(response.data.filter((consultant) => consultant.email == localStorage.getItem('emailId'))[0].customerId)
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
+        }
     }, []); const classes = useStyles();
 
 
-    const [createCustomerDialog, showCreateCustomerDialog] = React.useState(false);
-    const [deleteCustomerDialog, showDeleteCustomerDialog] = React.useState(false);
-    const [deleteConsultantDialog, showDeleteConsultantDialog] = React.useState(false);
-    const [deactivateConsultantDialog, showDeactivateConsultantDialog] = React.useState(false);
-    const [customerToDelete, setCustomerToDelete] = React.useState('');
-    const [consultantToDelete, setConsultantToDelete] = React.useState('');
-    const [consultantToDeactivate, setConsultantToDeactivate] = React.useState('');
-
-    const handleCreateCustomerOpen = () => {
-        showCreateCustomerDialog(true);
-    };
-
-    const handleCreateCustomerClose = () => {
-        showCreateCustomerDialog(false);
-    };
-
-    const handleDeleteCustomerOpen = () => {
-        showDeleteCustomerDialog(true);
-    };
-
-    const handleDeleteCustomerClose = () => {
-        showDeleteCustomerDialog(false);
-    };
-
-    const handleDeleteConsultantOpen = () => {
-        showDeleteConsultantDialog(true);
-    };
-
-    const handleDeleteConsultantClose = () => {
-        showDeleteConsultantDialog(false);
-    };
-
-    const handleDeactivateConsultantOpen = () => {
-        showDeactivateConsultantDialog(true);
-    };
-
-    const handleDeactivateConsultantClose = () => {
-        showDeactivateConsultantDialog(false);
-    };
-
-    const handleCreateCustomer = () => {
-        var payload = {
-            customer: customerName,
-            department: customerDepartment
-        }
-        axios
-            .post("http://localhost:4000/customers", payload, {
-            })
-            .then((response) => {
-                setCustomerOptions(customer => [...customer, response.data.customer]);
-                showCreateCustomerDialog(false);
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-
-    const handleDeleteCustomer = (customerToDelete) => {
-
-        axios
-            .delete("http://localhost:4000/customers/" + customerToDelete, {
-            })
-            .then((response) => {
-                let customers = customerOptions.filter(customer => customer != customerToDelete)
-                setCustomerOptions(customers)
-                handleDeleteCustomerClose()
-                window.location.href = "/measures"
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-    const handleDeleteConsultant = (consultantToDelete) => {
-
-        axios
-            .delete("http://localhost:4000/api/users/" + consultantToDelete, {
-            })
-            .then((response) => {
-                let consultants = consultantOptions.filter(consultant => consultant != consultantToDelete)
-                setConsultantOptions(consultants)
-                handleDeleteConsultantClose()
-
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-    const handleDeactivateConsultant = (consultantToDeactivate) => {
-
-        axios
-            .put("http://localhost:4000/api/users/" + consultantToDeactivate, {
-                "email": consultantToDeactivate, "isActive": false
-            })
-            .then((response) => {
-
-                handleDeactivateConsultantClose()
-                alert('Consultant has been deactivated')
-            })
-            .catch(function (e) {
-                console.log(e);
-            });
-    }
-
+    const [customerName, setCustomerName] = React.useState('');
     const handleBaselineColumns = (event) => {
-        setBaselineColumns(columns => [...columns, { title: '2025', field: '2025' },
-        { title: '2026', field: '2026' },
-        { title: '2027', field: '2027' },
-        { title: '2028', field: '2029' },
-        { title: '2029', field: '2029' }]);
+        setBaselineColumns(columns => [...columns, { title: '2025(€)', field: '2025' },
+        { title: '2026(€)', field: '2026' },
+        { title: '2027(€)', field: '2027' },
+        { title: '2028(€)', field: '2028' },
+        { title: '2029(€)', field: '2029' }]);
+        event.target.parentNode.style.display='none'
     }
 
+    const handleSavingsTotalCostRows = (event) => {
+        setSavingsTotalCostColumns(columns => [...columns, { title: '2025(€)', field: '2025' },
+        { title: '2026(€)', field: '2026' },
+        { title: '2027(€)', field: '2027' },
+        { title: '2028(€)', field: '2028' },
+        { title: '2029(€)', field: '2029' }]);
+        event.target.parentNode.style.display='none'
+    }
     const handleBaselineTotalCostRows = (event) => {
-        setBaselineTotalCostColumns(columns => [...columns, { title: '2025', field: '2025' },
-        { title: '2026', field: '2026' },
-        { title: '2027', field: '2027' },
-        { title: '2028', field: '2029' },
-        { title: '2029', field: '2029' }]);
+        setBaselineTotalCostColumns(columns => [...columns, { title: '2025(€)', field: '2025' },
+        { title: '2026(€)', field: '2026' },
+        { title: '2027(€)', field: '2027' },
+        { title: '2028(€)', field: '2028' },
+        { title: '2029(€)', field: '2029' }]);
+        event.target.parentNode.style.display='none'
     }
 
     const handleSavingsColumns = (event) => {
-        setSavingsColumns(columns => [...columns, { title: '2025', field: '2025' },
-        { title: '2026', field: '2026' },
-        { title: '2027', field: '2027' },
-        { title: '2028', field: '2029' },
-        { title: '2029', field: '2029' }]);
+        setSavingsColumns(columns => [...columns, { title: '2025(€)', field: '2025' },
+        { title: '2026(€)', field: '2026' },
+        { title: '2027(€)', field: '2027' },
+        { title: '2028(€)', field: '2028' },
+        { title: '2029(€)', field: '2029' }]);
+        event.target.parentNode.style.display='none'
     }
 
-    const changeCustomerName = (e) => {
-        setCustomerName(e.target.value)
-    }
 
-    const changeCustomerDepartment = (e) => {
-        setCustomerDepartment(e.target.value)
-    }
     return (
         <div className={classes.root}>
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        IT Cost Efficiency
-        </Typography>
-                    {/* <Button color="inherit" onClick={() => { window.location.href = '/signup'; }}>Login</Button> */}
-                    <Button color="inherit" onClick={logOut}>Logout</Button>
-                </Toolbar>
 
-            </AppBar>
             <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                 <Alert onClose={handleClose} severity="error">
                     Please enter values for all the fields
         </Alert>
             </Snackbar>
-            {rows.length > 0 && localStorage.getItem('isActive') == "true" ?
+            {isAdmin == false && localStorage.getItem('isActive') == "true" ?
                 <div>
-                    <FormControl className={classes.formControl}>
-                        <InputLabel id="demo-simple-select-label">Select Customer</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={selectedCustomer}
-                            onChange={changeCustomerSelected}
-                        >
-                            {customersAssigned.map(item =>
-                                <MenuItem
-                                    value={item.customerId}
-                                >
-                                    {item.customer}
-                                </MenuItem>
-                            )}
-                        </Select>
-                    </FormControl>
+                    <div className={classes.clientDetails}>
+            {customerName}
+            <AssignmentIndIcon fontSize='medium' />
+
+        </div>
                     <Typography style={{ marginLeft: "20px" }}>
                         <h2> Targets & Baseline </h2>
                     </Typography>
@@ -598,9 +397,9 @@ function Settings() {
                         <h2> Cost Baseline</h2>
                     </Typography>
                     <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineTotalCostRows}>
-                        +  Add Columns
+                     Show more year columns
       </Button>
-                    <MaterialTable
+      <MaterialTable
                         icons={tableIcons}
                         title="Total IT Cost"
                         columns={baselineTotalCostColumns}
@@ -613,15 +412,28 @@ function Settings() {
                             onRowUpdate: (newData, oldData) =>
                                 new Promise(resolve => {
                                     setTimeout(() => {
-                                        newData.customerId = localStorage.getItem('customerId') + ''
+                                        var costYearAmount = {}
+                                        var baselineTotalItCost = {}
+                                        var baselineTotalItCostYear = []
+                                        var baselinePayload = {}
+                                        for (var i in newData) {
+                                            costYearAmount = {}
+                                            costYearAmount['year'] = parseInt(i)
+                                            costYearAmount['totalCost'] = parseInt(newData[i])
+                                            baselineTotalItCostYear.push(costYearAmount)
+                                        }
+                                        baselinePayload.year = baselineTotalItCostYear
                                         resolve();
                                         axios
-                                            .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+                                            .put("http://localhost:4000/baseline?customer=" + localStorage.getItem('customerId'), baselinePayload, {
                                                 headers: { 'x-access-token': localStorage.getItem('token') }
                                             })
                                             .then((response) => {
-                                                setRows(prevState => {
+                                                setBaselineTotalCostRows(prevState => {
                                                     const data = [...prevState];
+                                                    console.log('data' + data)
+                                                    console.log(newData)
+
                                                     data[data.indexOf(oldData)] = newData;
                                                     return data;
                                                 })
@@ -637,7 +449,7 @@ function Settings() {
                     />
 
                     <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineColumns}>
-                        +  Add Columns
+                    Show more year columns
       </Button>
                     <MaterialTable
                         icons={tableIcons}
@@ -647,13 +459,9 @@ function Settings() {
                         editable={{
                             onRowAdd: newData =>
                                 new Promise((resolve, reject) => {
-                                    // if (Object.keys(newData).length < 8) {
-                                    //     setOpen(true);
-                                    //     reject()
-                                    // }
-                                    // else {
+                                   
                                     setTimeout(() => {
-                                        console.log(newData)
+                                       
                                         var costTypeYearAmount = {}
                                         var costTypeYearAmountData = []
                                         var costTypePayload = {}
@@ -772,31 +580,44 @@ function Settings() {
                     <Typography style={{ marginLeft: "20px" }}>
                         <h2> Saving Targets</h2>
                     </Typography>
-                    <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineTotalCostRows}>
-                        +  Add Columns
+                    <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleSavingsTotalCostRows}>
+                        Show more year columns
       </Button>
                     <MaterialTable
                         icons={tableIcons}
                         title="Total IT Cost"
-                        columns={baselineTotalCostColumns}
+                        columns={savingsTotalCostColumns}
                         options={{
                             paging: false,
                             search: false,
                         }}
-                        data={baselineTotalCostRows}
+                        data={savingsTotalCostRows}
                         editable={{
                             onRowUpdate: (newData, oldData) =>
                                 new Promise(resolve => {
                                     setTimeout(() => {
-                                        newData.customerId = localStorage.getItem('customerId') + ''
+                                        
+                                        var savingsTotalItCost = {}
+                                        var savingsTotalItCostYear = []
+                                        var savingsPayload = {}
+                                        for (var i in newData) {
+                                            savingsTotalItCost = {}
+                                            savingsTotalItCost['year'] = parseInt(i)
+                                            savingsTotalItCost['totalCost'] = parseInt(newData[i])
+                                            savingsTotalItCostYear.push(savingsTotalItCost)
+                                        }
+                                        savingsPayload.year = savingsTotalItCostYear
                                         resolve();
                                         axios
-                                            .put("http://localhost:4000/measures/" + oldData.measureId, newData, {
+                                            .put("http://localhost:4000/savingsTarget?customer=" + localStorage.getItem('customerId'), savingsPayload, {
                                                 headers: { 'x-access-token': localStorage.getItem('token') }
                                             })
                                             .then((response) => {
-                                                setRows(prevState => {
+                                                setSavingsTotalCostRows(prevState => {
                                                     const data = [...prevState];
+                                                    console.log('data' + data)
+                                                    console.log(newData)
+
                                                     data[data.indexOf(oldData)] = newData;
                                                     return data;
                                                 })
@@ -805,7 +626,6 @@ function Settings() {
                                                 console.log(e);
                                             }, 600);
                                     })
-
                                 }),
 
                         }}
@@ -816,8 +636,8 @@ function Settings() {
 
 
 
-                    <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleBaselineColumns}>
-                        +  Add Columns
+                    <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleSavingsColumns}>
+                      Show more year columns
       </Button>
                     <MaterialTable
                         icons={tableIcons}
@@ -950,233 +770,17 @@ function Settings() {
                         }}
                     />
                 </div>
-                : isAdmin == false ? <Typography variant="h6" className={classes.title}>
-                    You have not been assigned customers at the moment, please contact your administrator.
-          </Typography>
-                    :
-                    <div>
-                        <div>
-                            <Button style={{ marginLeft: "20px", marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleCreateCustomerOpen}>
-                                Create Customer
-      </Button>
-                            <Dialog open={createCustomerDialog} onClose={handleCreateCustomerClose} aria-labelledby="form-dialog-title">
-
-                                <DialogTitle id="form-dialog-title">Create</DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText>
-                                        Please enter the customer details
-          </DialogContentText>
-                                    <TextField
-                                        autoFocus
-                                        margin="dense"
-                                        onChange={changeCustomerName}
-                                        label="Customer Name"
-                                        value={customerName}
-                                        fullWidth
-                                    />
-                                    <TextField
-                                        autoFocus
-                                        margin="dense"
-                                        onChange={changeCustomerDepartment}
-                                        value={customerDepartment}
-                                        label="Department"
-                                        fullWidth
-                                    />
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleCreateCustomerClose} color="primary">
-                                        Cancel
-          </Button>
-                                    <Button onClick={handleCreateCustomer} color="primary">
-                                        Create
-          </Button>
-                                </DialogActions>
-                            </Dialog>
-
-
-                            <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeleteCustomerOpen}>
-                                Delete Customer
-      </Button>
-                            <Dialog open={deleteCustomerDialog} onClose={handleDeleteCustomerClose} aria-labelledby="form-dialog-title">
-
-                                <DialogTitle id="form-dialog-title">Delete Customer</DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText>
-                                        Please select the customer to delete
-          </DialogContentText>
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel id="demo-simple-select-label">Customer</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={customerToDelete}
-                                            onChange={handleCustomerToDeleteChange}
-                                        >
-                                            {customerOptions.map(item => (
-                                                <MenuItem
-                                                    value={item}
-                                                >
-                                                    {item}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleDeleteCustomerClose} color="primary">
-                                        Cancel
-          </Button>
-                                    <Button onClick={() => { handleDeleteCustomer(customerToDelete) }} color="primary">
-                                        Delete
-          </Button>
-                                </DialogActions>
-                            </Dialog>
-
-
-                            <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeleteConsultantOpen}>
-                                Delete Consultant
-            </Button>
-                            <Dialog open={deleteConsultantDialog} onClose={handleDeleteConsultantClose} aria-labelledby="form-dialog-title">
-
-                                <DialogTitle id="form-dialog-title">Delete Consultant</DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText>
-                                        Please select the consultant to delete
-          </DialogContentText>
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={consultantToDelete}
-                                            onChange={handleConsultantToDeleteChange}
-                                        >
-                                            {consultantOptions.map(item => (
-                                                <MenuItem
-                                                    value={item}
-                                                >
-                                                    {item}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleDeleteConsultantClose} color="primary">
-                                        Cancel
-          </Button>
-                                    <Button onClick={() => { handleDeleteConsultant(consultantToDelete) }} color="primary">
-                                        Delete
-          </Button>
-                                </DialogActions>
-                            </Dialog>
-
-                            <Button style={{ marginTop: "10px", marginRight: "10px" }} variant="outlined" color="primary" onClick={handleDeactivateConsultantOpen}>
-                                Deactivate Consultant
-            </Button>
-                            <Dialog open={deactivateConsultantDialog} onClose={handleDeactivateConsultantClose} aria-labelledby="form-dialog-title">
-
-                                <DialogTitle id="form-dialog-title">Deactivate Consultant</DialogTitle>
-                                <DialogContent>
-                                    <DialogContentText>
-                                        Please select the consultant to deactivate
-          </DialogContentText>
-                                    <FormControl className={classes.formControl}>
-                                        <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            value={consultantToDeactivate}
-                                            onChange={handleConsultantToDeactivateChange}
-                                        >
-                                            {consultantOptions.map(item => (
-                                                <MenuItem
-                                                    value={item}
-                                                >
-                                                    {item}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-
-                                </DialogContent>
-                                <DialogActions>
-                                    <Button onClick={handleDeactivateConsultantClose} color="primary">
-                                        Cancel
-          </Button>
-                                    <Button onClick={() => { handleDeactivateConsultant(consultantToDeactivate) }} color="primary">
-                                        Deactivate
-          </Button>
-                                </DialogActions>
-                            </Dialog>
-                        </div>
-                        <FormControl style={{ marginLeft: "60px" }} className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-label">Customer</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={customers}
-                                onChange={handleCustomerChange}
-                            >
-                                {customerOptions.map(item => (
-                                    <MenuItem
-                                        value={item}
-                                    >
-                                        {item}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <FormControl style={{ marginLeft: "20px" }} className={classes.formControl}>
-                            <InputLabel id="demo-simple-select-label">Consultant</InputLabel>
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                value={consultant}
-                                onChange={handleConsultantChange}
-                            >
-                                {consultantOptions.map(item => (
-                                    <MenuItem
-                                        value={item}
-                                    >
-                                        {item}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
-                        <Button
-                            onClick={handleConsultant}
-
-                            variant="contained"
-                            color="primary"
-                            className={classes.submit}
-                        >
-                            Add
-          </Button>
-
-                        {customerOptions.map(customer => (
-                            <div style={{ marginLeft: "60px" }} className={classes.customer}>
-                                {customer} - {consultantAccess.map(consultant => {
-
-                                    return (consultant.customer === customer) ?
-                                        // <span> {consultant.email} </span>
-                                        <Chip
-
-                                            label={consultant.email}
-
-                                            onDelete={() => handleDelete(consultant.email, customer)}
-                                        />
-
-                                        : null
-                                })}
-                            </div>
-                        ))}
-
-                    </div>
-            }
-        </div>
+               : isAdmin == false && localStorage.getItem('isActive') == "false" ? <Typography variant="h6" className={classes.title}>
+               Your account has been temporarily deactivated, please contact your administrator.
+                
+         </Typography>
+                   :
+                   <Typography variant="h6" className={classes.title}>
+                         You have not been assigned customers at the moment, please contact your administrator.
+         </Typography>
+           }
+            </div>
+            
     );
 }
 
